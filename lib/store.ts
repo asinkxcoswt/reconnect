@@ -1,10 +1,10 @@
 
 import { supabase } from './supabase';
-import { GameState } from './gameModel';
+// import { GameState } from './gameModel';
 
 // Replaces the Map<string, GameState> with Supabase calls
 
-export async function getGame(roomId: string): Promise<GameState | null> {
+export async function getGame<T>(roomId: string): Promise<T | null> {
     const { data, error } = await supabase
         .from('games')
         .select('state')
@@ -12,10 +12,10 @@ export async function getGame(roomId: string): Promise<GameState | null> {
         .single();
 
     if (error || !data) return null;
-    return data.state as GameState;
+    return data.state as T;
 }
 
-export async function saveGame(game: GameState): Promise<void> {
+export async function saveGame<T extends { roomId: string }>(game: T): Promise<void> {
     const { error } = await supabase
         .from('games')
         .upsert(

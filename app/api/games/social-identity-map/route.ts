@@ -3,16 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
     createRoom,
     joinRoom,
-    startGame,
-    playTurn,
+    updateMap,
+    setPresenter,
     generateId,
-    GameState
-} from '@/lib/gameModel';
+    GameState,
+    IdentityMap
+} from '@/lib/games/social-identity-map/model';
 import { getGame, saveGame } from '@/lib/store';
 
 export async function POST(req: NextRequest) {
     const body = await req.json();
-    const { action, roomId, playerId, playerName, cardIds } = body;
+    const { action, roomId, playerId, playerName, map, presenterId } = body;
 
     try {
         if (action === 'create') {
@@ -32,23 +33,24 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, game: updatedGame, playerId: pid });
         }
 
-        // For other actions, we need roomId and playerId
-        if (!roomId || !playerId) {
+        // For other actions, we need roomId
+        if (!roomId) {
             return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
         }
 
         const game = await getGame<GameState>(roomId);
         if (!game) return NextResponse.json({ error: 'Room not found' }, { status: 404 });
 
-        if (action === 'start') {
-            const updatedGame = startGame(game, playerId);
+        if (action === 'update_map') {
+            if (!playerId || !map) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+            const updatedGame = updateMap(game, playerId, map as IdentityMap);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }
 
-        if (action === 'play') {
-            const subAction = body.subAction; // 'reveal' | 'skip'
-            const updatedGame = playTurn(game, playerId, subAction, cardIds);
+        if (action === 'set_presenter') {
+            // presenterId can be null to stop sharing
+            const updatedGame = setPresenter(game, presenterId);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }
@@ -67,7 +69,7 @@ export async function GET(req: NextRequest) {
 
     if (!roomId) return NextResponse.json({ error: 'Room ID required' }, { status: 400 });
 
-    const game = await getGame(roomId);
+    const game = await getGame<GameState>(roomId);
     if (!game) return NextResponse.json({ error: 'Room not found' }, { status: 404 });
 
     return NextResponse.json({ game });
