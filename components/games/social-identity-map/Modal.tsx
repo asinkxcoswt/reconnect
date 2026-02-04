@@ -15,7 +15,7 @@ export function Modal({ isOpen, onClose, title, children, actions }: ModalProps)
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300 cursor-pointer"
             onClick={onClose}
         >
             <div
@@ -30,7 +30,7 @@ export function Modal({ isOpen, onClose, title, children, actions }: ModalProps)
                     <h3 className="text-xl font-bold text-white">{title}</h3>
                     <button
                         onClick={onClose}
-                        className="bg-neutral-800 hover:bg-neutral-700 w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:text-white transition-all transform hover:rotate-90"
+                        className="bg-neutral-800 hover:bg-neutral-700 w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:text-white transition-all transform hover:rotate-90 cursor-pointer"
                     >
                         ✕
                     </button>
@@ -72,7 +72,7 @@ export function PromptModal({ isOpen, onClose, title, value, onChange, onSubmit,
                     <button
                         onClick={onSubmit}
                         disabled={isPending}
-                        className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
                     >
                         {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                         {submitLabel}
@@ -80,7 +80,7 @@ export function PromptModal({ isOpen, onClose, title, value, onChange, onSubmit,
                     <button
                         onClick={onClose}
                         disabled={isPending}
-                        className="w-full py-2 text-neutral-400 hover:text-white font-medium transition-colors disabled:opacity-50"
+                        className="w-full py-2 text-neutral-400 hover:text-white font-medium transition-colors disabled:opacity-50 cursor-pointer"
                     >
                         ยกเลิก
                     </button>
@@ -120,7 +120,7 @@ export function AlertModal({ isOpen, onClose, title, message, type = 'info', but
             actions={
                 <button
                     onClick={onClose}
-                    className={`w-full py-3.5 ${colorClass} text-white font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98]`}
+                    className={`w-full py-3.5 ${colorClass} text-white font-bold rounded-2xl transition-all shadow-lg active:scale-[0.98] cursor-pointer`}
                 >
                     {buttonLabel}
                 </button>

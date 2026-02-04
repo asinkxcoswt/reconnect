@@ -16,7 +16,7 @@ export function Modal({ isOpen, onClose, title, children, actions }: ModalProps)
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300 cursor-pointer"
             onClick={onClose}
         >
             <div
@@ -31,7 +31,7 @@ export function Modal({ isOpen, onClose, title, children, actions }: ModalProps)
                     <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">{title}</h3>
                     <button
                         onClick={onClose}
-                        className="bg-gray-700/50 hover:bg-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all transform hover:rotate-90"
+                        className="bg-gray-700/50 hover:bg-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all transform hover:rotate-90 cursor-pointer"
                     >
                         ✕
                     </button>
@@ -71,13 +71,13 @@ export function PromptModal({ isOpen, onClose, title, value, onChange, onSubmit,
                 <div className="flex flex-col gap-3">
                     <button
                         onClick={onSubmit}
-                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-purple-900/30 active:scale-[0.98]"
+                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-purple-900/30 active:scale-[0.98] cursor-pointer"
                     >
                         {submitLabel}
                     </button>
                     <button
                         onClick={onClose}
-                        className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors"
+                        className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors cursor-pointer"
                     >
                         ยกเลิก
                     </button>
@@ -117,7 +117,7 @@ export function AlertModal({ isOpen, onClose, title, message, type = 'info', but
             actions={
                 <button
                     onClick={onClose}
-                    className={`w-full py-4 bg-gradient-to-r ${colorClass} text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98]`}
+                    className={`w-full py-4 bg-gradient-to-r ${colorClass} text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98] cursor-pointer`}
                 >
                     {buttonLabel}
                 </button>

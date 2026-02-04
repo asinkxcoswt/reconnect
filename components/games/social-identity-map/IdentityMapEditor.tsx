@@ -181,7 +181,7 @@ function LayerInput({ label, description, values, color, loading, onChange }: {
                         <button
                             onClick={() => handleRemove(i)}
                             disabled={loading}
-                            className={`ml-2 text-neutral-500 hover:text-red-400 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
+                            className={`ml-2 text-neutral-500 hover:text-red-400 cursor-pointer ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
                         >
                             ×
                         </button>
@@ -204,7 +204,7 @@ function LayerInput({ label, description, values, color, loading, onChange }: {
                 <button
                     onClick={handleAdd}
                     disabled={!newItem.trim() || loading}
-                    className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 px-3 py-1.5 rounded text-sm transition disabled:opacity-50 flex items-center gap-2"
+                    className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 px-3 py-1.5 rounded text-sm transition disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                     {loading && <div className="w-4 h-4 border-2 border-neutral-500 border-t-neutral-300 rounded-full animate-spin" />}
                     เพิ่ม

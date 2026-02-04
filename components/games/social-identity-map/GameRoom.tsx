@@ -144,13 +144,13 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                         <h2 className="text-xl font-bold truncate">ห้อง: {game.roomId}</h2>
                         <button
                             onClick={copyRoomId}
-                            className="bg-neutral-700 hover:bg-neutral-600 p-1.5 rounded transition shadow-sm text-[10px] text-neutral-300 flex-shrink-0"
+                            className="bg-neutral-700 hover:bg-neutral-600 p-1.5 rounded transition shadow-sm text-[10px] text-neutral-300 flex-shrink-0 cursor-pointer"
                             title="คัดลอกรหัสห้อง"
                         >
                             คัดลอก
                         </button>
                     </div>
-                    <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+                    <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white cursor-pointer">
                         ✕
                     </button>
                 </div>
@@ -167,7 +167,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                                             setActiveSubjectId(p.id);
                                             setIsSidebarOpen(false);
                                         }}
-                                        className={`w-full p-2 rounded text-left flex items-center justify-between transition ${activeSubjectId === p.id && !game.presenterId
+                                        className={`w-full p-2 rounded text-left flex items-center justify-between transition cursor-pointer ${activeSubjectId === p.id && !game.presenterId
                                             ? 'bg-blue-600 text-white'
                                             : 'hover:bg-neutral-700 text-gray-300'
                                             } ${game.presenterId === p.id ? 'ring-2 ring-blue-500' : ''}`}
@@ -186,7 +186,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                                                 handleKick(p.id, p.name);
                                             }}
                                             disabled={isPending}
-                                            className="absolute right-2 top-2 p-1 text-neutral-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition whitespace-nowrap bg-neutral-800/80 rounded"
+                                            className="absolute right-2 top-2 p-1 text-neutral-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition whitespace-nowrap bg-neutral-800/80 rounded cursor-pointer"
                                             title="เชิญออก"
                                         >
                                             <span className="text-[10px]">🚫</span>
@@ -196,7 +196,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                                     {p.id === playerId && (
                                         <button
                                             onClick={() => setRenameModal({ isOpen: true, name: p.name })}
-                                            className="text-[10px] text-gray-500 hover:text-blue-400 self-end px-2"
+                                            className="text-[10px] text-gray-500 hover:text-blue-400 self-end px-2 cursor-pointer"
                                         >
                                             แก้ไขชื่อ ✎
                                         </button>
@@ -208,7 +208,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
 
                     <button
                         onClick={shareRoomLink}
-                        className="w-full py-2 px-3 bg-neutral-700/50 hover:bg-neutral-700 border border-neutral-600 rounded text-xs text-neutral-300 font-bold transition flex items-center justify-center gap-2"
+                        className="w-full py-2 px-3 bg-neutral-700/50 hover:bg-neutral-700 border border-neutral-600 rounded text-xs text-neutral-300 font-bold transition flex items-center justify-center gap-2 cursor-pointer"
                     >
                         + เชิญเพื่อน
                     </button>
@@ -220,7 +220,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                         <button
                             onClick={() => handleSetPresenter(playerId, activeSubjectId)}
                             disabled={isPending}
-                            className="w-full py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="w-full py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                         >
                             {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                             แบ่งปันแผนที่นี้
@@ -229,7 +229,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                         <button
                             onClick={() => handleSetPresenter(null, null)}
                             disabled={isPending}
-                            className="w-full py-2 bg-red-600 hover:bg-red-700 rounded font-semibold transition animate-pulse flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="w-full py-2 bg-red-600 hover:bg-red-700 rounded font-semibold transition animate-pulse flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                         >
                             {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                             หยุดแบ่งปัน
@@ -244,7 +244,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                         <button
                             onClick={() => setAbortConfirm(true)}
                             disabled={isPending}
-                            className="w-full py-1 text-[10px] text-gray-600 hover:text-red-400 uppercase tracking-widest transition"
+                            className="w-full py-1 text-[10px] text-gray-600 hover:text-red-400 uppercase tracking-widest transition cursor-pointer"
                         >
                             กลับล็อบบี้
                         </button>
@@ -259,7 +259,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                     <div className="flex items-center gap-3 overflow-hidden">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="md:hidden p-2 -ml-2 text-gray-400 hover:text-white"
+                            className="md:hidden p-2 -ml-2 text-gray-400 hover:text-white cursor-pointer"
                         >
                             ☰
                         </button>

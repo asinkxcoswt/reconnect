@@ -164,7 +164,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     </div>
                     <button
                         onClick={copyRoomId}
-                        className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg transition-colors group flex items-center gap-1 text-xs font-bold text-gray-400"
+                        className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg transition-colors group flex items-center gap-1 text-xs font-bold text-gray-400 cursor-pointer"
                         title="คัดลอกรหัสห้อง"
 
                     >
@@ -206,7 +206,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                 {isHost && p.id !== playerId && (
                                     <button
                                         onClick={(e) => { e.stopPropagation(); handleKick(p.id, p.name); }}
-                                        className="ml-1 bg-red-600/20 hover:bg-red-600/40 text-red-500 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors border border-red-500/30"
+                                        className="ml-1 bg-red-600/20 hover:bg-red-600/40 text-red-500 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors border border-red-500/30 cursor-pointer"
                                         title="เชิญออก"
                                     >
                                         ✕
@@ -218,7 +218,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     {isHost && (
                         <button
                             onClick={shareRoomLink}
-                            className="bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/50 py-2 px-6 rounded-xl text-sm font-bold transition-all"
+                            className="bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/50 py-2 px-6 rounded-xl text-sm font-bold transition-all cursor-pointer"
                         >
                             + เชิญเพื่อน
                         </button>
@@ -260,7 +260,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                 {isHost && (
                                     <button
                                         onClick={(e) => { e.stopPropagation(); handleKick(p.id, p.name); }}
-                                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
+                                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10 cursor-pointer"
                                         title="เชิญออก"
                                     >
                                         ✕
@@ -383,7 +383,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                     <button
                                         onClick={handleSkip}
                                         disabled={isPending}
-                                        className="px-6 py-2 bg-gray-600 hover:bg-gray-500 disabled:opacity-50 rounded-lg font-bold flex items-center gap-2"
+                                        className="px-6 py-2 bg-gray-600 hover:bg-gray-500 disabled:opacity-50 rounded-lg font-bold flex items-center gap-2 cursor-pointer"
                                     >
                                         {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                         ข้าม
@@ -391,7 +391,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                     <button
                                         onClick={handleReveal}
                                         disabled={selectedCardIds.length === 0 || isPending}
-                                        className="px-6 py-2 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-black rounded-lg font-bold flex items-center gap-2"
+                                        className="px-6 py-2 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-black rounded-lg font-bold flex items-center gap-2 cursor-pointer"
                                     >
                                         {isPending && <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />}
                                         เปิดเผยที่เลือก
@@ -415,7 +415,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     {isHost && game.status === 'playing' && (
                         <button
                             onClick={() => setAbortConfirm(true)}
-                            className="mt-4 bg-red-900/20 hover:bg-red-900/40 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-wider"
+                            className="mt-4 bg-red-900/20 hover:bg-red-900/40 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-wider cursor-pointer"
                         >
                             หยุดเกม / กลับล็อบบี้
                         </button>
@@ -432,7 +432,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                 actions={
                     <button
                         onClick={() => handleCopyInvite(recoveryModal.url)}
-                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
                     >
                         <span>คัดลอกลิงก์</span>
                         <span className="text-xl">📋</span>
@@ -464,14 +464,14 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                         <button
                             onClick={handleKickConfirm}
                             disabled={isPending}
-                            className="w-full py-4 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98] flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {isPending && <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                             {isPending ? 'กำลังดำเนินการ...' : 'เชิญออก'}
                         </button>
                         <button
                             onClick={() => setKickConfirm({ ...kickConfirm, isOpen: false })}
-                            className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors"
+                            className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors cursor-pointer"
                         >
                             ยกเลิก
                         </button>
@@ -512,7 +512,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                 actions={
                     <button
                         onClick={() => handleCopyInvite(roomInviteModal.url)}
-                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
                     >
                         <span>คัดลอกลิงก์</span>
                         <span className="text-xl">📋</span>
@@ -540,14 +540,14 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                 try { await onResetToLobby(); setAbortConfirm(false); } finally { setIsPending(false); }
                             }}
                             disabled={isPending}
-                            className="w-full py-4 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98] flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {isPending && <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                             {isPending ? 'กำลังดำเนินการ...' : 'หยุดเกมและกลับล็อบบี้'}
                         </button>
                         <button
                             onClick={() => setAbortConfirm(false)}
-                            className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors"
+                            className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors cursor-pointer"
                         >
                             เล่นต่อ
                         </button>

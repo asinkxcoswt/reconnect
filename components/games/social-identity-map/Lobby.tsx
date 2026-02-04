@@ -40,7 +40,7 @@ export function Lobby({ onCreate, onJoin, loading }: LobbyProps) {
                             <button
                                 onClick={() => playerName && onCreate(playerName)}
                                 disabled={!playerName || loading}
-                                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                             >
                                 {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                 สร้างห้องใหม่
@@ -55,7 +55,7 @@ export function Lobby({ onCreate, onJoin, loading }: LobbyProps) {
                             </div>
                             <button
                                 onClick={() => setIsJoining(true)}
-                                className="w-full py-3 px-4 bg-neutral-700 hover:bg-neutral-600 text-white font-semibold rounded-lg transition"
+                                className="w-full py-3 px-4 bg-neutral-700 hover:bg-neutral-600 text-white font-semibold rounded-lg transition cursor-pointer"
                             >
                                 เข้าร่วมห้องที่มีอยู่
                             </button>
@@ -77,14 +77,14 @@ export function Lobby({ onCreate, onJoin, loading }: LobbyProps) {
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setIsJoining(false)}
-                                    className="px-4 py-3 bg-neutral-700 hover:bg-neutral-600 text-white font-semibold rounded-lg transition"
+                                    className="px-4 py-3 bg-neutral-700 hover:bg-neutral-600 text-white font-semibold rounded-lg transition cursor-pointer"
                                 >
                                     กลับ
                                 </button>
                                 <button
                                     onClick={() => playerName && roomId && onJoin(roomId, playerName)}
                                     disabled={!playerName || !roomId || loading}
-                                    className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                                 >
                                     {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                     เข้าร่วมห้อง
