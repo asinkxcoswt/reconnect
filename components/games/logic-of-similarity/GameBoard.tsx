@@ -171,15 +171,6 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     </button>
                 </div>
 
-                {isHost && game.status === 'playing' && (
-                    <button
-                        onClick={() => setAbortConfirm(true)}
-                        className="bg-red-900/20 hover:bg-red-900/40 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-wider"
-                    >
-                        หยุดเกม / กลับล็อบบี้
-                    </button>
-                )}
-
                 <div className="text-right">
                     <p className="font-mono font-bold text-green-400 text-xl">${me.money}</p>
                     <p className="text-sm text-gray-400 font-medium">{me.name} (คุณ)</p>
@@ -419,6 +410,15 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                         />
 
                     </div>
+
+                    {isHost && game.status === 'playing' && (
+                        <button
+                            onClick={() => setAbortConfirm(true)}
+                            className="mt-4 bg-red-900/20 hover:bg-red-900/40 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-wider"
+                        >
+                            หยุดเกม / กลับล็อบบี้
+                        </button>
+                    )}
                 </div>
             )}
 
