@@ -12,15 +12,15 @@ interface LinkProps {
 
 export function IdentityMapEditor({ map, readOnly = false, loading = false, onChange }: LinkProps) {
     return (
-        <div className="flex flex-col md:flex-row gap-8 w-full h-full items-start justify-center p-4">
+        <div className="flex flex-col xl:flex-row gap-8 w-full h-full items-start justify-center p-4">
             {/* Visualizer Area */}
-            <div className={`flex-1 flex items-center justify-center min-h-[500px] w-full ${readOnly ? 'flex-grow' : 'md:w-2/3'}`}>
+            <div className={`flex-1 flex items-center justify-center min-h-[500px] w-full ${readOnly ? 'flex-grow' : 'xl:w-2/3'}`}>
                 <MapVisualizer map={map} />
             </div>
 
             {/* Editing Panel - Only show if not readOnly */}
             {!readOnly && (
-                <div className="w-full md:w-1/3 bg-neutral-800 p-6 rounded-xl border border-neutral-700 h-[600px] overflow-hidden flex flex-col">
+                <div className="w-full xl:w-1/3 bg-neutral-800 p-6 rounded-xl border border-neutral-700 h-[600px] overflow-hidden flex flex-col">
                     <h3 className="text-lg font-semibold text-white mb-4">แก้ไขแผนที่</h3>
                     <div className="flex-1 overflow-y-auto space-y-6 pr-2">
                         <LayerInput

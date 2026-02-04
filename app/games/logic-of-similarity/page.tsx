@@ -49,11 +49,11 @@ export default function GameIntro() {
                     <p className="italic text-purple-300">"คนที่ได้ยินเสียงกระซิบนี้ จึงไม่รีบร้อนเปิดเผยความจริงของตัวเอง แต่รู้จักเฝ้ารอและสังเกตจังหวะที่โลกต้องการมัน"</p>
 
                 </div>
-                <div className="w-full md:w-64 shrink-0">
+                <div className="w-64 shrink-0 flex items-center justify-center">
                     <img
                         src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1702893819i/157981748.jpg"
                         alt="Supercommunicators Book"
-                        className="rounded-lg shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500"
+                        className="rounded-lg shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 "
                     />
                 </div>
             </div>
