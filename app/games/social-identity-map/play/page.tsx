@@ -131,6 +131,7 @@ export default function SocialIdentityMapPage() {
         <Lobby
             onCreate={handleCreate}
             onJoin={handleJoin}
+            loading={loading}
         />
     );
 }

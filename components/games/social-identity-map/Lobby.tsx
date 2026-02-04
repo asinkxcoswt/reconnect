@@ -5,9 +5,10 @@ import { useState } from 'react';
 interface LobbyProps {
     onCreate: (playerName: string) => void;
     onJoin: (roomId: string, playerName: string) => void;
+    loading?: boolean;
 }
 
-export function Lobby({ onCreate, onJoin }: LobbyProps) {
+export function Lobby({ onCreate, onJoin, loading }: LobbyProps) {
     const [playerName, setPlayerName] = useState('');
     const [roomId, setRoomId] = useState('');
     const [isJoining, setIsJoining] = useState(false);
@@ -38,9 +39,10 @@ export function Lobby({ onCreate, onJoin }: LobbyProps) {
                         <div className="space-y-4">
                             <button
                                 onClick={() => playerName && onCreate(playerName)}
-                                disabled={!playerName}
-                                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={!playerName || loading}
+                                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
+                                {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                 สร้างห้องใหม่
                             </button>
                             <div className="relative">
@@ -81,9 +83,10 @@ export function Lobby({ onCreate, onJoin }: LobbyProps) {
                                 </button>
                                 <button
                                     onClick={() => playerName && roomId && onJoin(roomId, playerName)}
-                                    disabled={!playerName || !roomId}
-                                    className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={!playerName || !roomId || loading}
+                                    className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
+                                    {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                     เข้าร่วมห้อง
                                 </button>
                             </div>
