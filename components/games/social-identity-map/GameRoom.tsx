@@ -7,13 +7,14 @@ import { IdentityMapEditor } from './IdentityMapEditor';
 interface GameRoomProps {
     game: GameState;
     playerId: string;
-    onUpdateMap: (subjectId: string, map: IdentityMap) => void;
-    onSetPresenter: (presenterId: string | null, subjectId: string | null) => void;
+    onUpdateMap: (subjectId: string, map: IdentityMap) => Promise<void>;
+    onSetPresenter: (presenterId: string | null, subjectId: string | null) => Promise<void>;
 }
 
 export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRoomProps) {
     const [activeSubjectId, setActiveSubjectId] = useState<string>(playerId);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     const me = game.players.find(p => p.id === playerId);
     const presenter = game.presenterId ? game.players.find(p => p.id === game.presenterId) : null;
@@ -42,6 +43,28 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
         isReadOnly = false;
     }
 
+    const handleSetPresenter = async (pId: string | null, sId: string | null) => {
+        if (isPending) return;
+        setIsPending(true);
+        try {
+            await onSetPresenter(pId, sId);
+        } finally {
+            setIsPending(false);
+        }
+    };
+
+    const handleUpdateMap = async (subjectId: string, map: IdentityMap) => {
+        // Updates might be frequent, but let's still prevent concurrent ones if possible
+        // or just let it be async. Given it's a map editor, maybe we don't block the whole UI
+        // but we should pass the loading state down.
+        setIsPending(true);
+        try {
+            await onUpdateMap(subjectId, map);
+        } finally {
+            setIsPending(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-neutral-900 flex flex-col md:flex-row text-white overflow-hidden">
             {/* Sidebar - Hidden on mobile unless toggled */}
@@ -63,7 +86,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
                             {game.players.map(p => (
                                 <button
                                     key={p.id}
-                                    disabled={!!game.presenterId}
+                                    disabled={!!game.presenterId || isPending}
                                     onClick={() => {
                                         setActiveSubjectId(p.id);
                                         setIsSidebarOpen(false);
@@ -87,16 +110,20 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
                     {/* Controls */}
                     {game.presenterId === null ? (
                         <button
-                            onClick={() => onSetPresenter(playerId, activeSubjectId)}
-                            className="w-full py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition"
+                            onClick={() => handleSetPresenter(playerId, activeSubjectId)}
+                            disabled={isPending}
+                            className="w-full py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition flex items-center justify-center gap-2 disabled:opacity-50"
                         >
+                            {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                             แบ่งปันแผนที่นี้
                         </button>
                     ) : isPresenting ? (
                         <button
-                            onClick={() => onSetPresenter(null, null)}
-                            className="w-full py-2 bg-red-600 hover:bg-red-700 rounded font-semibold transition animate-pulse"
+                            onClick={() => handleSetPresenter(null, null)}
+                            disabled={isPending}
+                            className="w-full py-2 bg-red-600 hover:bg-red-700 rounded font-semibold transition animate-pulse flex items-center justify-center gap-2 disabled:opacity-50"
                         >
+                            {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                             หยุดแบ่งปัน
                         </button>
                     ) : (
@@ -132,7 +159,8 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
                             <IdentityMapEditor
                                 map={viewMap}
                                 readOnly={isReadOnly}
-                                onChange={(newMap) => onUpdateMap(activeSubjectId, newMap)}
+                                loading={isPending}
+                                onChange={(newMap) => handleUpdateMap(activeSubjectId, newMap)}
                             />
                         </div>
                     )}
