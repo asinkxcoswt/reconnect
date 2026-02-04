@@ -10,7 +10,7 @@ export default function Home() {
           Reconnect
         </h1>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          พื้นที่จัดแสดงเกมและไอเดียดิจิทัลที่ออกแบบมาเพื่อให้ผู้คนใกล้ชิดกันมากขึ้น
+          เกมและไอเดีย เพื่อเชื่อมโยง และผูกพัน
         </p>
       </header>
 
