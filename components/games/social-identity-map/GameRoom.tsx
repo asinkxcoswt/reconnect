@@ -13,6 +13,7 @@ interface GameRoomProps {
 
 export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRoomProps) {
     const [activeSubjectId, setActiveSubjectId] = useState<string>(playerId);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const me = game.players.find(p => p.id === playerId);
     const presenter = game.presenterId ? game.players.find(p => p.id === game.presenterId) : null;
@@ -42,10 +43,18 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
     }
 
     return (
-        <div className="min-h-screen bg-neutral-900 flex text-white overflow-hidden">
-            {/* Sidebar */}
-            <div className="w-64 bg-neutral-800 border-r border-neutral-700 p-4 flex flex-col">
-                <h2 className="text-xl font-bold mb-6">ห้อง: {game.roomId}</h2>
+        <div className="min-h-screen bg-neutral-900 flex flex-col md:flex-row text-white overflow-hidden">
+            {/* Sidebar - Hidden on mobile unless toggled */}
+            <div className={`
+                ${isSidebarOpen ? 'fixed inset-0 z-40 flex' : 'hidden'} 
+                md:relative md:flex md:w-64 bg-neutral-800 border-r border-neutral-700 p-4 flex-col
+            `}>
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold">ห้อง: {game.roomId}</h2>
+                    <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+                        ✕
+                    </button>
+                </div>
 
                 <div className="flex-1 overflow-y-auto space-y-4">
                     <div>
@@ -55,7 +64,10 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
                                 <button
                                     key={p.id}
                                     disabled={!!game.presenterId}
-                                    onClick={() => setActiveSubjectId(p.id)}
+                                    onClick={() => {
+                                        setActiveSubjectId(p.id);
+                                        setIsSidebarOpen(false);
+                                    }}
                                     className={`w-full p-2 rounded text-left flex items-center justify-between transition ${activeSubjectId === p.id && !game.presenterId
                                         ? 'bg-blue-600 text-white'
                                         : 'hover:bg-neutral-700 text-gray-300'
@@ -96,19 +108,27 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
             </div>
 
             {/* Main Area */}
-            <div className="flex-1 flex flex-col relative overflow-hidden">
+            <div className="flex-1 flex flex-col relative overflow-hidden h-screen">
                 {/* Header */}
-                <div className="h-16 border-b border-neutral-700 flex items-center justify-between px-6 bg-neutral-800/50">
-                    <h1 className="text-xl font-semibold">{viewTitle}</h1>
-                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${isReadOnly ? 'bg-amber-900/50 text-amber-500' : 'bg-green-900/50 text-green-500'}`}>
+                <div className="h-16 border-b border-neutral-700 flex items-center justify-between px-4 md:px-6 bg-neutral-800/50 flex-shrink-0">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="md:hidden p-2 -ml-2 text-gray-400 hover:text-white"
+                        >
+                            ☰
+                        </button>
+                        <h1 className="text-lg md:text-xl font-semibold truncate">{viewTitle}</h1>
+                    </div>
+                    <div className={`px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap ${isReadOnly ? 'bg-amber-900/50 text-amber-500' : 'bg-green-900/50 text-green-500'}`}>
                         {isReadOnly ? 'อ่านอย่างเดียว' : 'กำลังแก้ไข'}
                     </div>
                 </div>
 
-                {/* Canvas */}
-                <div className="flex-1 overflow-auto bg-neutral-900 p-8">
+                {/* Canvas Area */}
+                <div className="flex-1 overflow-auto bg-neutral-900 pb-20 md:pb-8">
                     {viewMap && (
-                        <div className="h-full flex items-center justify-center">
+                        <div className="min-h-full flex items-start justify-center p-4">
                             <IdentityMapEditor
                                 map={viewMap}
                                 readOnly={isReadOnly}
