@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function GameIntro() {
     return (
-        <div className="min-h-screen bg-gray-900 text-white font-sans">
+        <div className="min-h-screen bg-gray-900 text-white font-sans pb-8">
             {/* Hero Section */}
             <div className="relative overflow-hidden bg-gradient-to-b from-purple-900 to-gray-900 py-24 px-8 text-center">
                 <div className="relative z-10 max-w-4xl mx-auto">

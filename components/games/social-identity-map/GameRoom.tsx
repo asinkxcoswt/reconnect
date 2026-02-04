@@ -155,7 +155,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto space-y-4">
+                <div className=" overflow-y-auto space-y-4">
                     <div>
                         <p className="text-xs font-semibold text-gray-500 uppercase mb-2">ผู้เล่น</p>
                         <div className="space-y-1">
@@ -186,10 +186,10 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                                                 handleKick(p.id, p.name);
                                             }}
                                             disabled={isPending}
-                                            className="absolute right-2 top-2 p-1 text-neutral-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition whitespace-nowrap bg-neutral-800/80 rounded cursor-pointer"
+                                            className="absolute right-2 top-1 p-1 text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition whitespace-nowrap  rounded cursor-pointer"
                                             title="เชิญออก"
                                         >
-                                            <span className="text-[10px]">🚫</span>
+                                            <span className="text-[10px]">✕</span>
                                         </button>
                                     )}
 
@@ -208,7 +208,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
 
                     <button
                         onClick={shareRoomLink}
-                        className="w-full py-2 px-3 bg-neutral-700/50 hover:bg-neutral-700 border border-neutral-600 rounded text-xs text-neutral-300 font-bold transition flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full py-2 px-3 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/50 rounded text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer"
                     >
                         + เชิญเพื่อน
                     </button>
@@ -240,15 +240,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                         </div>
                     )}
 
-                    {isHost && (
-                        <button
-                            onClick={() => setAbortConfirm(true)}
-                            disabled={isPending}
-                            className="w-full py-1 text-[10px] text-gray-600 hover:text-red-400 uppercase tracking-widest transition cursor-pointer"
-                        >
-                            กลับล็อบบี้
-                        </button>
-                    )}
+
                 </div>
             </div>
 
