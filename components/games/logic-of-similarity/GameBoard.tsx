@@ -14,9 +14,10 @@ interface GameBoardProps {
     onStart: () => Promise<void>;
     onResetToLobby: () => Promise<void>;
     onUpdateMoney: (targetPlayerId: string, amount: number) => Promise<void>;
+    onUpdateName: (newName: string) => Promise<void>;
 }
 
-export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onResetToLobby, onUpdateMoney }: GameBoardProps) {
+export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onResetToLobby, onUpdateMoney, onUpdateName }: GameBoardProps) {
     const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [newPlayerName, setNewPlayerName] = useState('');
@@ -24,6 +25,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
     const [infoModal, setInfoModal] = useState<{ isOpen: boolean; title: string; message: string }>({ isOpen: false, title: '', message: '' });
     const [kickConfirm, setKickConfirm] = useState<{ isOpen: boolean; targetId: string; name: string }>({ isOpen: false, targetId: '', name: '' });
     const [editMoneyModal, setEditMoneyModal] = useState<{ isOpen: boolean; targetId: string; name: string; amount: string }>({ isOpen: false, targetId: '', name: '', amount: '' });
+    const [renameModal, setRenameModal] = useState<{ isOpen: boolean; name: string }>({ isOpen: false, name: '' });
 
     const me = game.players.find(p => p.id === playerId);
     const isMyTurn = game.status === 'playing' && game.players[game.currentPlayerIndex].id === playerId;
@@ -120,6 +122,12 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
         setEditMoneyModal({ ...editMoneyModal, isOpen: false });
     };
 
+    const handleUpdateNameSubmit = async () => {
+        if (!renameModal.name.trim()) return;
+        await onUpdateName(renameModal.name.trim());
+        setRenameModal({ ...renameModal, isOpen: false });
+    };
+
     const shareRoomLink = async () => {
         const url = `${window.location.origin}${window.location.pathname}?roomId=${game.roomId}`;
         try {
@@ -161,11 +169,16 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                         {game.players.map(p => (
                             <div
                                 key={p.id}
-                                onClick={() => isHost && game.hostId !== p.id && openRecovery(p.id)}
-                                className={`px-6 py-3 rounded-full flex items-center gap-2 border-2 transition-all ${isHost && game.hostId !== p.id ? 'cursor-pointer hover:border-purple-500' : ''} ${p.id === playerId ? 'bg-blue-900/40 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-gray-700 border-transparent'}`}
+                                onClick={() => {
+                                    if (isHost && p.id !== playerId) openRecovery(p.id);
+                                    if (p.id === playerId) setRenameModal({ isOpen: true, name: p.name });
+                                }}
+                                className={`px-6 py-3 rounded-full flex items-center gap-2 border-2 transition-all ${p.id === playerId ? 'cursor-pointer hover:bg-blue-800/40' : (isHost && game.hostId !== p.id ? 'cursor-pointer hover:border-purple-500' : '')} ${p.id === playerId ? 'bg-blue-900/40 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-gray-700 border-transparent'}`}
                             >
                                 <div className={`w-3 h-3 rounded-full ${p.id === playerId ? 'bg-blue-400 animate-pulse' : 'bg-green-500'}`}></div>
-                                <span className="font-bold">{p.name}</span> {p.id === game.hostId ? '👑' : ''}
+                                <span className="font-bold flex items-center gap-1">
+                                    {p.name} {p.id === playerId && <span className="text-[10px] opacity-50">✎</span>}
+                                </span> {p.id === game.hostId ? '👑' : ''}
                                 {p.id === playerId && <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full ml-1 uppercase">คุณ</span>}
                                 <div
                                     onClick={(e) => { if (isHost) { e.stopPropagation(); handleEditMoney(p); } }}
@@ -423,6 +436,17 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                 value={editMoneyModal.amount}
                 onChange={(val) => setEditMoneyModal({ ...editMoneyModal, amount: val })}
                 onSubmit={handleUpdateMoneySubmit}
+                submitLabel="บันทึก"
+            />
+
+            <PromptModal
+                isOpen={renameModal.isOpen}
+                onClose={() => setRenameModal({ ...renameModal, isOpen: false })}
+                title="เปลี่ยนชื่อของคุณ"
+                placeholder="ระบุชื่อใหม่..."
+                value={renameModal.name}
+                onChange={(val) => setRenameModal({ ...renameModal, name: val })}
+                onSubmit={handleUpdateNameSubmit}
                 submitLabel="บันทึก"
             />
         </div>

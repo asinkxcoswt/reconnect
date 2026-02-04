@@ -198,6 +198,20 @@ export function updatePlayerMoney(game: GameState, hostId: string, targetPlayerI
     };
 }
 
+export function updatePlayerName(game: GameState, playerId: string, newName: string): GameState {
+    const updatedPlayers = game.players.map(p => {
+        if (p.id === playerId) {
+            return { ...p, name: newName };
+        }
+        return p;
+    });
+
+    return {
+        ...game,
+        players: updatedPlayers,
+    };
+}
+
 export function playTurn(game: GameState, playerId: string, action: 'reveal' | 'skip', cardIds?: string[]): GameState {
     if (game.status !== 'playing') throw new Error('Game not playing');
     const currentPlayer = game.players[game.currentPlayerIndex];

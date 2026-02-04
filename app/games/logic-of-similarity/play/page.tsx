@@ -177,6 +177,14 @@ function GameContent() {
     });
   };
 
+  const handleUpdateName = async (newName: string) => {
+    if (!game) return;
+    await fetch('/api/games/logic-of-similarity', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'update-name', roomId: game.roomId, playerId, newName }),
+    });
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Loading...</div>;
   }
@@ -191,6 +199,7 @@ function GameContent() {
         onStart={handleStart}
         onResetToLobby={handleResetToLobby}
         onUpdateMoney={handleUpdateMoney}
+        onUpdateName={handleUpdateName}
       />
     );
   }

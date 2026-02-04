@@ -9,6 +9,7 @@ import {
     removePlayer,
     resetToLobby,
     updatePlayerMoney,
+    updatePlayerName,
     generateId,
     GameState
 } from '@/lib/gameModel';
@@ -78,6 +79,13 @@ export async function POST(req: NextRequest) {
         if (action === 'update-money') {
             const { targetPlayerId, amount } = body;
             const updatedGame = updatePlayerMoney(game, playerId, targetPlayerId, amount);
+            await saveGame(updatedGame);
+            return NextResponse.json({ success: true, game: updatedGame });
+        }
+
+        if (action === 'update-name') {
+            const { newName } = body;
+            const updatedGame = updatePlayerName(game, playerId, newName);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }
