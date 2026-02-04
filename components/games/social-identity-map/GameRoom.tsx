@@ -147,7 +147,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                             className="bg-neutral-700 hover:bg-neutral-600 p-1.5 rounded transition shadow-sm text-[10px] text-neutral-300 flex-shrink-0"
                             title="คัดลอกรหัสห้อง"
                         >
-                            📋
+                            คัดลอก
                         </button>
                     </div>
                     <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
