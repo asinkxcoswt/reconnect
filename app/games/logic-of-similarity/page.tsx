@@ -25,39 +25,67 @@ export default function GameIntro() {
             </div>
 
             {/* Philosophy Section */}
-            <div className="max-w-3xl mx-auto py-16 px-8 prose prose-invert prose-lg">
-                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                    The Philosophy
-                </h2>
-                <p>
-                    In life, we often hold cards close to our chest. We think power comes from having the best hand.
-                    But in <strong>Logic of Similarity</strong>, having the cards means nothing if you don't show them.
-                </p>
-                <p>
-                    The "winning" color isn't determined by chance—it's determined by the collective bravery of the players.
-                    If everyone reveals Red, Red wins. But if you hold back your Blue cards hoping for a Blue victory,
-                    you doom yourself.
-                </p>
-                <p>
-                    It is a game about coordination, trust, and the risk of being the first to speak up.
-                </p>
+            <div className="max-w-4xl mx-auto py-16 px-8 flex flex-col md:flex-row gap-12 items-center">
+                <div className="flex-1 prose prose-invert prose-lg">
+                    <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                        แนวคิดเบื้องหลังเกม
+                    </h2>
+                    <p>
+                        แรงบันดาลใจของเกมนี้มาจากหนังสือ <strong>"Supercommunicators"</strong> ของ Charles Duhigg
+                        ที่พูดถึงความแตกต่างระหว่าง <strong>"Logic of Cost and Benefit"</strong> และ <strong>"Logic of Similarity"</strong>
+                    </p>
+                    <p>
+                        บ่อยครั้งที่การสื่อสารล้มเหลวเพราะเรามองข้าม "สิ่งที่เรากำลังคุยกันจริงๆ"
+                        คนทั่วไปมักโฟกัสที่เหตุผลและผลประโยชน์ (Facts & Logic) โดยไม่ทันสังเกตความรู้สึกหรือบริบททางสังคม
+                        ซึ่งนำไปสู่ความไม่เข้าใจกัน (Misalignment)
+                    </p>
+                    <p>
+                        ในโลกของการเจรจา ยอดนักสื่อสาร (Supercommunicators)
+                        มักจะใช้วิธีดึงทุกคนเข้ามาอยู่ใน "เกมเดียวกัน" สร้างความเหมือน (Similarity)
+                        เพื่อให้ทุกคนรู้สึกว่าเป็นส่วนหนึ่งของกลุ่ม ก่อนที่จะเริ่มถกเถียงเรื่องเหตุผล
+                    </p>
+                    <p className="italic text-purple-300">
+                        "ความจริงไม่ใช่แค่สิ่งที่คุณถืออยู่ในมือ แต่มันคือสิ่งที่คุณเลือกจะเปิดเผยเพื่อสร้างความเชื่อมโยง"
+                    </p>
+                </div>
+                <div className="w-full md:w-64 flex-shrink-0">
+                    <img
+                        src="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1702893819i/157981748.jpg"
+                        alt="Supercommunicators Book"
+                        className="rounded-lg shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500"
+                    />
+                </div>
+            </div>
 
-                <h2 className="mt-12 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-400">
-                    How to Play
+            {/* How to Play Section */}
+            <div className="max-w-4xl mx-auto py-16 px-8 border-t border-gray-800">
+                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-400 mb-8">
+                    ลองมาสัมผัสด้วยตัวเอง
                 </h2>
-                <ul className="list-disc pl-6 space-y-2 text-gray-300">
-                    <li>You are dealt <strong>4 cards</strong> of random colors.</li>
-                    <li>On your turn, you can <strong>Reveal</strong> cards of one color, or <strong>Skip</strong>.</li>
-                    <li>The game ends when everyone skips.</li>
-                    <li>The color with the <strong>most revealed cards</strong> wins.</li>
-                    <li>Winners split the pot (funded by the losers' penalties).</li>
-                </ul>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-300">
+                    <div className="bg-gray-800/50 p-6 rounded-2xl">
+                        <h3 className="text-xl font-bold text-white mb-4">กฎกติกาคร่าวๆ</h3>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li>คุณจะได้รับการ์ดสีต่างๆ 4 ใบ</li>
+                            <li>ในแต่ละตา คุณสามารถเลือก <strong>"เปิดเผย" (Reveal)</strong> การ์ดสีเดียวกัน หรือ <strong>"ข้าม" (Skip)</strong></li>
+                            <li>เกมจะจบลงเมื่อทุกคนเลือกข้ามติดต่อกัน</li>
+                        </ul>
+                    </div>
+                    <div className="bg-gray-800/50 p-6 rounded-2xl">
+                        <h3 className="text-xl font-bold text-white mb-4">เป้าหมาย</h3>
+                        <ul className="list-disc pl-6 space-y-2">
+                            <li>สีที่มีการเปิดเผย <strong>มากที่สุด</strong> จะเป็นสีที่ชนะ</li>
+                            <li>ผู้ที่ถือสีนั้นจะได้รับผลตอบแทนจากกองกลาง</li>
+                            <li>คุณจะใช้เหตุผลเพื่อเอาชนะ หรือจะสร้างความสอดคล้องเพื่อให้กลุ่มไปต่อได้?</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             {/* Footer */}
-            <footer className="border-t border-gray-800 py-8 text-center text-gray-500">
-                <Link href="/" className="hover:text-white transition-colors">
-                    ← Back to Reconnect Gallery
+            <footer className="border-t border-gray-800 py-12 text-center text-gray-500">
+                <Link href="/" className="hover:text-white transition-colors flex items-center justify-center gap-2">
+                    <span>←</span> กลับสู่ Reconnect Gallery
                 </Link>
             </footer>
         </div>
