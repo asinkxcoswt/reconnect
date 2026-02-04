@@ -161,6 +161,14 @@ function GameContent() {
     });
   };
 
+  const handleResetToLobby = async () => {
+    if (!game) return;
+    await fetch('/api/games/logic-of-similarity', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'reset-to-lobby', roomId: game.roomId, playerId }),
+    });
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Loading...</div>;
   }
@@ -173,6 +181,7 @@ function GameContent() {
         onRefresh={() => { }} // No-op, handled by realtime
         onAction={handleAction}
         onStart={handleStart}
+        onResetToLobby={handleResetToLobby}
       />
     );
   }

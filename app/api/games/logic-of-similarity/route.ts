@@ -7,6 +7,7 @@ import {
     playTurn,
     addPlayerSlot,
     removePlayer,
+    resetToLobby,
     generateId,
     GameState
 } from '@/lib/gameModel';
@@ -63,6 +64,12 @@ export async function POST(req: NextRequest) {
 
         if (action === 'remove-player') {
             const updatedGame = removePlayer(game, playerId, body.targetPlayerId);
+            await saveGame(updatedGame);
+            return NextResponse.json({ success: true, game: updatedGame });
+        }
+
+        if (action === 'reset-to-lobby') {
+            const updatedGame = resetToLobby(game, playerId);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }

@@ -152,10 +152,33 @@ export function startGame(game: GameState, requesterId: string): GameState {
     return {
         ...game,
         status: 'playing',
-        deck, // remaining deck (unused)
+        deck,
         players,
         currentPlayerIndex: 0,
         consecutivePasses: 0,
+    };
+}
+
+export function resetToLobby(game: GameState, requesterId: string): GameState {
+    if (game.hostId !== requesterId) throw new Error('Only host can reset to lobby');
+
+    // Reset player state but keep money
+    const players = game.players.map(p => ({
+        ...p,
+        hand: [] as Card[],
+        revealedCards: [] as Card[],
+        hasPassed: false,
+    }));
+
+    return {
+        ...game,
+        status: 'lobby',
+        players,
+        deck: [],
+        currentPlayerIndex: 0,
+        consecutivePasses: 0,
+        winners: undefined,
+        losers: undefined,
     };
 }
 

@@ -12,9 +12,10 @@ interface GameBoardProps {
     onRefresh: () => void;
     onAction: (action: 'play', subAction?: string, cardIds?: string[]) => Promise<void>;
     onStart: () => Promise<void>;
+    onResetToLobby: () => Promise<void>;
 }
 
-export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: GameBoardProps) {
+export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onResetToLobby }: GameBoardProps) {
     const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [newPlayerName, setNewPlayerName] = useState('');
@@ -257,14 +258,22 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                                     })}
                                 </div>
 
-                                <div className="w-full">
+                                <div className="w-full space-y-4 pt-4 border-t border-gray-700">
                                     {isHost && (
-                                        <button
-                                            onClick={onStart}
-                                            className="w-full cursor-pointer bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-900/20 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1"
-                                        >
-                                            รอบถัดไป
-                                        </button>
+                                        <div className="flex flex-col gap-3">
+                                            <button
+                                                onClick={onStart}
+                                                className="w-full cursor-pointer bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-900/40 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1 text-lg"
+                                            >
+                                                เล่นรอบถัดไป
+                                            </button>
+                                            <button
+                                                onClick={onResetToLobby}
+                                                className="cursor-pointer bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 border border-gray-500/50 py-3 rounded-2xl font-bold transition-all"
+                                            >
+                                                ไปที่ล็อบบี้
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
