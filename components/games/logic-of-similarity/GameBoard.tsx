@@ -190,7 +190,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                     if (isHost && p.id !== playerId) openRecovery(p.id);
                                     if (p.id === playerId) setRenameModal({ isOpen: true, name: p.name });
                                 }}
-                                className={`px-6 py-3 rounded-full flex items-center gap-2 border-2 transition-all ${p.id === playerId ? 'cursor-pointer hover:bg-blue-800/40' : (isHost && game.hostId !== p.id ? 'cursor-pointer hover:border-purple-500' : '')} ${p.id === playerId ? 'bg-blue-900/40 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-gray-700 border-transparent'}`}
+                                className={`px-6 py-3 rounded-full flex flex-wrap items-center gap-2 border-2 transition-all ${p.id === playerId ? 'cursor-pointer hover:bg-blue-800/40' : (isHost && game.hostId !== p.id ? 'cursor-pointer hover:border-purple-500' : '')} ${p.id === playerId ? 'bg-blue-900/40 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-gray-700 border-transparent'}`}
                             >
                                 <div className={`w-3 h-3 rounded-full ${p.id === playerId ? 'bg-blue-400 animate-pulse' : 'bg-green-500'}`}></div>
                                 <span className="font-bold flex items-center gap-1">
@@ -368,10 +368,10 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     <div
                         className={`mt-auto bg-gray-800/50 p-4 rounded-t-3xl backdrop-blur-sm border-t border-gray-700 relative transition-all`}
                     >
-                        <div className="flex justify-between items-center mb-4">
+                        <div className="flex justify-between items-center mb-4 flex-wrap gap-y-2">
                             <div>
                                 <h3 className="font-bold text-lg">การ์ดที่เปิดเผยแล้วของฉัน</h3>
-                                <div className="flex gap-2 mt-2 min-h-[40px]">
+                                <div className="flex gap-2 mt-2 min-h-[40px] flex-wrap">
                                     {me.revealedCards.map((c, i) => (
                                         <Card key={i} color={c.color} /> // Simplified small card? using normal for now
                                     ))}

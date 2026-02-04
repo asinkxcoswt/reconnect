@@ -20,7 +20,7 @@ export function Lobby({ onJoin, onCreate, loading }: LobbyProps) {
                     <h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
                         Logic of Similarity
                     </h1>
-                    <p className="text-gray-400">ค้นหาความเหมือนในความต่าง</p>
+                    <p className="text-gray-400">ความจริงที่คุณเลือกเผย</p>
                 </div>
 
                 <div className="space-y-6">

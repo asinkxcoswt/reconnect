@@ -153,10 +153,14 @@ function GameContent() {
 
   const handleStart = async () => {
     if (!game) return;
-    await fetch('/api/games/logic-of-similarity', {
+    const response = await fetch('/api/games/logic-of-similarity', {
       method: 'POST',
       body: JSON.stringify({ action: 'start', roomId: game.roomId, playerId }),
-    });
+    })
+    if (!response.ok) {
+      const errorBody = await response.text();
+      alert(errorBody)
+    }
   };
 
   const handleAction = async (action: 'play', subAction?: string, cardIds?: string[]) => {

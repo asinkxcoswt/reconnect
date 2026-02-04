@@ -74,9 +74,18 @@ export function joinRoom(game: GameState, playerId: string, playerName: string):
         hasPassed: false,
     };
 
+    const updatedPlayers = [...game.players, newPlayer];
+
+    // If room becomes non-empty and there's no host or host not in players, assign this player
+    let newHostId = game.hostId;
+    if (game.players.length === 0 || !game.players.find(p => p.id === game.hostId)) {
+        newHostId = playerId;
+    }
+
     return {
         ...game,
-        players: [...game.players, newPlayer],
+        players: updatedPlayers,
+        hostId: newHostId,
     };
 }
 
@@ -90,20 +99,36 @@ export function addPlayerSlot(game: GameState, playerName: string): { game: Game
         revealedCards: [],
         hasPassed: false,
     };
+
+    const updatedPlayers = [...game.players, newPlayer];
+
+    // If room was empty or host missing, assign this player as host
+    let newHostId = game.hostId;
+    if (game.players.length === 0 || !game.players.find(p => p.id === game.hostId)) {
+        newHostId = playerId;
+    }
+
     return {
         game: {
             ...game,
-            players: [...game.players, newPlayer],
+            players: updatedPlayers,
+            hostId: newHostId,
         },
         playerId
     };
 }
 
-export function removePlayer(game: GameState, hostId: string, targetPlayerId: string): GameState {
-    if (game.hostId !== hostId) throw new Error('Only host can remove players');
-    if (hostId === targetPlayerId) throw new Error('Host cannot remove themselves');
+export function internalRemovePlayer(game: GameState, targetPlayerId: string): GameState {
+    const playerToRemove = game.players.find(p => p.id === targetPlayerId);
+    if (!playerToRemove) return game;
 
     const updatedPlayers = game.players.filter(p => p.id !== targetPlayerId);
+
+    // Host transfer logic
+    let newHostId = game.hostId;
+    if (targetPlayerId === game.hostId && updatedPlayers.length > 0) {
+        newHostId = updatedPlayers[0].id;
+    }
 
     let nextPlayerIndex = game.currentPlayerIndex;
     if (game.status === 'playing') {
@@ -118,9 +143,36 @@ export function removePlayer(game: GameState, hostId: string, targetPlayerId: st
     return {
         ...game,
         players: updatedPlayers,
+        hostId: newHostId,
         currentPlayerIndex: nextPlayerIndex,
         consecutivePasses: 0, // Reset to be safe
     };
+}
+
+export function removePlayer(game: GameState, hostId: string, targetPlayerId: string): GameState {
+    if (game.hostId !== hostId) throw new Error('Only host can remove players');
+    if (hostId === targetPlayerId && game.players.length > 1) {
+        // Allow host to remove themselves if there are others to take over? 
+        // Or keep the original constraint. The user said "if the host leave... transfer host".
+        // Let's allow it if there's someone else.
+    } else if (hostId === targetPlayerId) {
+        throw new Error('Host cannot remove themselves if they are the only player');
+    }
+
+    return internalRemovePlayer(game, targetPlayerId);
+}
+
+export function cleanupBankruptPlayers(game: GameState): GameState {
+    let updatedGame = { ...game };
+    const bankruptPlayerIds = game.players
+        .filter(p => p.money <= 0)
+        .map(p => p.id);
+
+    for (const pid of bankruptPlayerIds) {
+        updatedGame = internalRemovePlayer(updatedGame, pid);
+    }
+
+    return updatedGame;
 }
 
 function generateDeck(): Card[] {
@@ -136,10 +188,14 @@ function generateDeck(): Card[] {
 
 export function startGame(game: GameState, requesterId: string): GameState {
     if (game.hostId !== requesterId) throw new Error('Only host can start');
-    if (game.players.length < 2) throw new Error('Need at least 2 players');
+
+    // Clean up bankrupt players before starting
+    const cleanedGame = cleanupBankruptPlayers(game);
+
+    if (cleanedGame.players.length < 2) throw new Error('Need at least 2 players');
 
     const deck = generateDeck();
-    const players = game.players.map(p => ({ ...p, hand: [] as Card[], revealedCards: [] as Card[], hasPassed: false }));
+    const players = cleanedGame.players.map(p => ({ ...p, hand: [] as Card[], revealedCards: [] as Card[], hasPassed: false }));
 
     // Deal 5 cards to each player
     players.forEach(p => {
@@ -150,7 +206,7 @@ export function startGame(game: GameState, requesterId: string): GameState {
     });
 
     return {
-        ...game,
+        ...cleanedGame,
         status: 'playing',
         deck,
         players,
@@ -297,9 +353,9 @@ function calculateScore(game: GameState): GameState {
             }
         });
 
-        // Special penalty: Player who don't reveal any card will be fined by PENALTY_AMOUNT X 5
+        // Special penalty: Player who don't reveal any card will be fined by half of their money
         if (p.revealedCards.length === 0) {
-            penalty += PENALTY_AMOUNT * 5;
+            penalty += Math.round(p.money / 2);
         }
 
         if (penalty > 0) {
@@ -333,11 +389,13 @@ function calculateScore(game: GameState): GameState {
         });
     }
 
-    return {
+    const finalGame: GameState = {
         ...game,
-        status: 'finished',
+        status: 'finished' as const,
         players: playerUpdates,
         winners,
         losers,
     };
+
+    return finalGame;
 }
