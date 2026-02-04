@@ -5,6 +5,8 @@ import {
     joinRoom,
     startGame,
     playTurn,
+    addPlayerSlot,
+    removePlayer,
     generateId,
     GameState
 } from '@/lib/gameModel';
@@ -49,6 +51,18 @@ export async function POST(req: NextRequest) {
         if (action === 'play') {
             const subAction = body.subAction; // 'reveal' | 'skip'
             const updatedGame = playTurn(game, playerId, subAction, cardIds);
+            await saveGame(updatedGame);
+            return NextResponse.json({ success: true, game: updatedGame });
+        }
+
+        if (action === 'create-slot') {
+            const result = addPlayerSlot(game, body.playerName || 'New Player');
+            await saveGame(result.game);
+            return NextResponse.json({ success: true, game: result.game, newPlayerId: result.playerId });
+        }
+
+        if (action === 'remove-player') {
+            const updatedGame = removePlayer(game, playerId, body.targetPlayerId);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }

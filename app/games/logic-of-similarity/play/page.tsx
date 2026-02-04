@@ -1,28 +1,73 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Lobby } from '@/components/games/logic-of-similarity/Lobby';
 import { GameBoard } from '@/components/games/logic-of-similarity/GameBoard';
+import { AlertModal } from '@/components/games/logic-of-similarity/Modal';
 import { GameState } from '@/lib/gameModel';
 import { supabase } from '@/lib/supabase';
 
-export default function Home() {
+function GameContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [game, setGame] = useState<GameState | null>(null);
-  const [playerId, setPlayerId] = useState<string>('');
+  const [playerId, setPlayerId] = useState<string>(searchParams.get('playerId') || '');
   const [loading, setLoading] = useState(false);
+  const [kickedModal, setKickedModal] = useState(false);
+
+  const initialRoomId = searchParams.get('roomId');
+  const hasSyncedUrl = useRef(false);
+
+  // Initial fetch if roomId in URL
+  useEffect(() => {
+    if (initialRoomId && !game) {
+      const fetchInitial = async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`/api/games/logic-of-similarity?roomId=${initialRoomId}`);
+          const data = await res.json();
+          if (data.game) {
+            setGame(data.game);
+          }
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchInitial();
+    }
+  }, [initialRoomId]);
 
   // Sync with Supabase Realtime
   useEffect(() => {
     if (!game?.roomId) return;
 
-    // Initial fetch to ensure we have latest state
-    const fetchLatest = async () => {
-      const res = await fetch(`/api/games/logic-of-similarity?roomId=${game.roomId}`);
-      const data = await res.json();
-      if (data.game) setGame(data.game);
-    };
-    fetchLatest();
+    // Update URL if missing or mismatch
+    const currentRoomIdInUrl = searchParams.get('roomId') || '';
+    const currentPlayerIdInUrl = searchParams.get('playerId') || '';
+
+    if (currentRoomIdInUrl !== (game.roomId || '') || currentPlayerIdInUrl !== (playerId || '')) {
+      const params = new URLSearchParams(searchParams.toString());
+      let changed = false;
+
+      if (game.roomId && currentRoomIdInUrl !== game.roomId) {
+        params.set('roomId', game.roomId);
+        changed = true;
+      }
+
+      if (playerId && currentPlayerIdInUrl !== playerId) {
+        params.set('playerId', playerId);
+        changed = true;
+      }
+
+      if (changed) {
+        hasSyncedUrl.current = true;
+        router.replace(`${pathname}?${params.toString()}`);
+      }
+    }
 
     const channel = supabase
       .channel(`game-${game.roomId}`)
@@ -38,6 +83,15 @@ export default function Home() {
           // Payload.new contains the new row data
           const newState = (payload.new as any).state as GameState;
           if (newState) {
+            // Check if I was kicked
+            const stillInGame = newState.players.some(p => p.id === playerId);
+            if (!stillInGame && playerId && game.status !== 'finished') {
+              setKickedModal(true);
+              setGame(null);
+              setPlayerId('');
+              router.push(pathname);
+              return;
+            }
             setGame(newState);
           }
         }
@@ -47,7 +101,7 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [game?.roomId]);
+  }, [game?.roomId, playerId, pathname, router, searchParams]);
 
   const handleCreate = async (playerName: string) => {
     setLoading(true);
@@ -124,9 +178,26 @@ export default function Home() {
   }
 
   return (
-    <Lobby
-      onCreate={handleCreate}
-      onJoin={handleJoin}
-    />
+    <>
+      <Lobby
+        onCreate={handleCreate}
+        onJoin={handleJoin}
+      />
+      <AlertModal
+        isOpen={kickedModal}
+        onClose={() => setKickedModal(false)}
+        title="ถูกเชิญออก"
+        message="คุณถูกเชิญออกจากห้องโดยโฮสต์"
+        type="warning"
+      />
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Loading...</div>}>
+      <GameContent />
+    </Suspense>
   );
 }

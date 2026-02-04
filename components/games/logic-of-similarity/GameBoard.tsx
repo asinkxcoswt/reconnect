@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { GameState, Card as CardType } from '@/lib/gameModel';
 import { Card } from './Card';
 import { PlayerHand } from './PlayerHand';
+import { Modal, PromptModal, AlertModal } from './Modal';
 
 interface GameBoardProps {
     game: GameState;
@@ -15,6 +16,11 @@ interface GameBoardProps {
 
 export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: GameBoardProps) {
     const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [newPlayerName, setNewPlayerName] = useState('');
+    const [recoveryModal, setRecoveryModal] = useState<{ isOpen: boolean; url: string; name: string }>({ isOpen: false, url: '', name: '' });
+    const [infoModal, setInfoModal] = useState<{ isOpen: boolean; title: string; message: string }>({ isOpen: false, title: '', message: '' });
+    const [kickConfirm, setKickConfirm] = useState<{ isOpen: boolean; targetId: string; name: string }>({ isOpen: false, targetId: '', name: '' });
 
     const me = game.players.find(p => p.id === playerId);
     const isMyTurn = game.status === 'playing' && game.players[game.currentPlayerIndex].id === playerId;
@@ -53,17 +59,82 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
         setSelectedCardIds([]);
     };
 
+    const handleCreateSlot = async () => {
+        if (!newPlayerName) return;
+
+        const res = await fetch('/api/games/logic-of-similarity', {
+            method: 'POST',
+            body: JSON.stringify({ action: 'create-slot', roomId: game.roomId, playerId, playerName: newPlayerName }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            const inviteUrl = `${window.location.origin}${window.location.pathname}?roomId=${game.roomId}&playerId=${data.newPlayerId}`;
+            setNewPlayerName('');
+            setIsInviteModalOpen(false);
+            setRecoveryModal({ isOpen: true, url: inviteUrl, name: data.game.players.find((p: any) => p.id === data.newPlayerId)?.name || 'ผู้เล่นใหม่' });
+        }
+    };
+
+    const handleCopyInvite = async (url: string) => {
+        try {
+            await navigator.clipboard.writeText(url);
+            setInfoModal({ isOpen: true, title: 'สำเร็จ!', message: 'ก๊อปปี้ลิงก์เชิญแล้ว!' });
+        } catch (err) {
+            console.error('Clipboard failed:', err);
+        }
+    };
+
+    const openRecovery = (targetPlayerId: string) => {
+        if (!isHost) return;
+        const target = game.players.find(p => p.id === targetPlayerId);
+        if (!target) return;
+        const url = `${window.location.origin}${window.location.pathname}?roomId=${game.roomId}&playerId=${target.id}`;
+        setRecoveryModal({ isOpen: true, url, name: target.name });
+    };
+
+    const handleKick = (targetId: string, name: string) => {
+        setKickConfirm({ isOpen: true, targetId, name });
+    };
+
+    const handleKickConfirm = async () => {
+        const { targetId } = kickConfirm;
+        setKickConfirm({ ...kickConfirm, isOpen: false });
+        await fetch('/api/games/logic-of-similarity', {
+            method: 'POST',
+            body: JSON.stringify({ action: 'remove-player', roomId: game.roomId, playerId, targetPlayerId: targetId }),
+        });
+    };
+
+    const shareRoomLink = async () => {
+        const url = `${window.location.origin}${window.location.pathname}?roomId=${game.roomId}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            setInfoModal({ isOpen: true, title: 'สำเร็จ!', message: 'ก๊อปปี้ลิงก์ห้องแล้ว! ส่งให้เพื่อนเพื่อเข้าร่วมได้เลย' });
+        } catch (err) {
+            console.error('Clipboard failed:', err);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-900 text-white p-4">
             {/* Header */}
-            <div className="flex justify-between items-center mb-8 bg-gray-800 p-4 rounded-xl">
-                <div>
-                    <h2 className="text-xl font-bold text-gray-200">ห้อง: {game.roomId}</h2>
-                    <p className="text-sm text-gray-400">สถานะ: {game.status}</p>
+            <div className="flex justify-between items-center mb-8 bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700">
+                <div className="flex items-center gap-4">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-200">ห้อง: {game.roomId}</h2>
+                        <p className="text-xs text-gray-500 uppercase tracking-widest">{game.status}</p>
+                    </div>
+                    <button
+                        onClick={shareRoomLink}
+                        className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg transition-colors group"
+                        title="แชร์ลิงก์ห้อง"
+                    >
+                        🔗
+                    </button>
                 </div>
                 <div className="text-right">
-                    <p className="font-bold text-green-400">${me.money}</p>
-                    <p className="text-sm text-gray-400">{me.name} (คุณ)</p>
+                    <p className="font-mono font-bold text-green-400 text-xl">${me.money}</p>
+                    <p className="text-sm text-gray-400 font-medium">{me.name} (คุณ)</p>
                 </div>
             </div>
 
@@ -73,25 +144,38 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                     <h2 className="text-2xl font-bold">กำลังรอผู้เล่น...</h2>
                     <div className="flex flex-wrap gap-4 justify-center">
                         {game.players.map(p => (
-                            <div key={p.id} className="bg-gray-700 px-6 py-3 rounded-full flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                                {p.name} {p.id === game.hostId ? '👑' : ''}
+                            <div
+                                key={p.id}
+                                onClick={() => isHost && openRecovery(p.id)}
+                                className={`px-6 py-3 rounded-full flex items-center gap-2 border-2 transition-all ${isHost ? 'cursor-pointer hover:border-purple-500' : ''} ${p.id === playerId ? 'bg-blue-900/40 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-gray-700 border-transparent'}`}
+                            >
+                                <div className={`w-3 h-3 rounded-full ${p.id === playerId ? 'bg-blue-400 animate-pulse' : 'bg-green-500'}`}></div>
+                                <span className="font-bold">{p.name}</span> {p.id === game.hostId ? '👑' : ''}
+                                {p.id === playerId && <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full ml-1 uppercase">คุณ</span>}
                             </div>
                         ))}
                     </div>
+                    {isHost && (
+                        <button
+                            onClick={() => setIsInviteModalOpen(true)}
+                            className="bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/50 py-2 px-6 rounded-xl text-sm font-bold transition-all"
+                        >
+                            + สร้างลิงก์เชิญเพื่อน
+                        </button>
+                    )}
                     {isHost && game.players.length >= 2 && (
                         <button
                             onClick={onStart}
-                            className="mt-8 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl"
+                            className="mt-8 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-green-900/20 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1"
                         >
                             เริ่มเกม
                         </button>
                     )}
                     {isHost && game.players.length < 2 && (
-                        <p className="text-yellow-500">ต้องการผู้เล่นอย่างน้อย 2 คนเพื่อเริ่มเกม</p>
+                        <p className="text-yellow-500 font-medium">ต้องการผู้เล่นอย่างน้อย 2 คนเพื่อเริ่มเกม</p>
                     )}
                     {!isHost && (
-                        <p className="animate-pulse text-gray-400">กำลังรอโฮสต์เริ่มเกม...</p>
+                        <p className="animate-pulse text-gray-500 italic">กำลังรอโฮสต์เริ่มเกม...</p>
                     )}
                 </div>
             )}
@@ -102,10 +186,23 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                     {/* Opponents Areas */}
                     <div className="flex flex-wrap gap-4 justify-center mb-8">
                         {game.players.filter(p => p.id !== playerId).map(p => (
-                            <div key={p.id} className={`bg-gray-800 p-4 rounded-lg border-2 ${game.players[game.currentPlayerIndex].id === p.id ? 'border-yellow-500' : 'border-transparent'}`}>
-                                <div className="flex justify-between mb-2">
-                                    <span>{p.name}</span>
-                                    <span className="text-green-400">${p.money}</span>
+                            <div
+                                key={p.id}
+                                onClick={() => openRecovery(p.id)}
+                                className={`bg-gray-800 p-4 rounded-xl border-2 relative group min-w-[150px] transition-all ${isHost ? 'cursor-pointer hover:border-purple-500' : ''} ${game.players[game.currentPlayerIndex].id === p.id ? 'border-yellow-500 shadow-lg shadow-yellow-900/20' : 'border-gray-700'}`}
+                            >
+                                {isHost && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); handleKick(p.id, p.name); }}
+                                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
+                                        title="เชิญออก"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                                <div className="flex justify-between mb-2 items-center">
+                                    <span className="font-bold text-gray-200">{p.name}</span>
+                                    <span className="text-green-400 font-mono font-bold">${p.money}</span>
                                 </div>
                                 <div className="flex gap-1 mb-2">
                                     {/* Hidden Hand */}
@@ -181,7 +278,10 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                     )}
 
                     {/* My Area */}
-                    <div className="mt-auto bg-gray-800/50 p-4 rounded-t-3xl backdrop-blur-sm border-t border-gray-700">
+                    <div
+                        onClick={() => isHost && openRecovery(playerId)}
+                        className={`mt-auto bg-gray-800/50 p-4 rounded-t-3xl backdrop-blur-sm border-t border-gray-700 relative transition-all ${isHost ? 'cursor-pointer hover:bg-gray-800/80 group' : ''}`}
+                    >
                         <div className="flex justify-between items-center mb-4">
                             <div>
                                 <h3 className="font-bold text-lg">การ์ดที่เปิดเผยแล้วของฉัน</h3>
@@ -220,9 +320,80 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                             selectedCardIds={selectedCardIds}
                             onToggleCard={toggleCard}
                         />
+                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-black shadow-xl animate-bounce border-2 border-blue-400 z-20">
+                            ✨ คุณคือผู้เล่นคนนี้
+                        </div>
                     </div>
                 </div>
             )}
+
+            {/* Modals */}
+            <PromptModal
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                title="สร้างสล็อตเพื่อนใหม่"
+                placeholder="ระบุชื่อเพื่อน..."
+                value={newPlayerName}
+                onChange={setNewPlayerName}
+                onSubmit={handleCreateSlot}
+                submitLabel="สร้าง และ ก๊อปปี้ลิงก์"
+            />
+
+            <Modal
+                isOpen={recoveryModal.isOpen}
+                onClose={() => setRecoveryModal({ ...recoveryModal, isOpen: false })}
+                title={`ลิงก์เชิญสำหรับ ${recoveryModal.name}`}
+                actions={
+                    <button
+                        onClick={() => handleCopyInvite(recoveryModal.url)}
+                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2"
+                    >
+                        <span>คัดลอกลิงก์</span>
+                        <span className="text-xl">📋</span>
+                    </button>
+                }
+            >
+                <div className="space-y-4 text-center">
+                    <p className="text-gray-400">ส่งลิงก์ด้านล่างนี้ให้เพื่อนเพื่อเข้าร่วมในฐานะ <span className="text-white font-bold">{recoveryModal.name}</span>:</p>
+                    <div className="bg-black/40 p-4 rounded-2xl break-all font-mono text-xs text-purple-400 border border-purple-500/20 shadow-inner select-all">
+                        {recoveryModal.url}
+                    </div>
+                </div>
+            </Modal>
+
+            <AlertModal
+                isOpen={infoModal.isOpen}
+                onClose={() => setInfoModal({ ...infoModal, isOpen: false })}
+                title={infoModal.title}
+                message={infoModal.message}
+                type="success"
+            />
+
+            <Modal
+                isOpen={kickConfirm.isOpen}
+                onClose={() => setKickConfirm({ ...kickConfirm, isOpen: false })}
+                title={`เชิญ ${kickConfirm.name} ออก?`}
+                actions={
+                    <>
+                        <button
+                            onClick={handleKickConfirm}
+                            className="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98]"
+                        >
+                            เชิญออก
+                        </button>
+                        <button
+                            onClick={() => setKickConfirm({ ...kickConfirm, isOpen: false })}
+                            className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors"
+                        >
+                            ยกเลิก
+                        </button>
+                    </>
+                }
+            >
+                <div className="text-center">
+                    <p className="text-gray-300">คุณต้องการเชิญ <span className="text-white font-bold">{kickConfirm.name}</span> ออกจากห้องใช่หรือไม่?</p>
+                </div>
+            </Modal>
         </div>
     );
 }

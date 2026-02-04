@@ -60,8 +60,10 @@ export function createRoom(hostId: string, hostName: string): GameState {
 }
 
 export function joinRoom(game: GameState, playerId: string, playerName: string): GameState {
+    const existingPlayer = game.players.find(p => p.id === playerId);
+    if (existingPlayer) return game; // Already in game (robust rejoin)
+
     if (game.status !== 'lobby') throw new Error('Game already started');
-    if (game.players.some(p => p.id === playerId)) return game; // Already matched
 
     const newPlayer: Player = {
         id: playerId,
@@ -75,6 +77,49 @@ export function joinRoom(game: GameState, playerId: string, playerName: string):
     return {
         ...game,
         players: [...game.players, newPlayer],
+    };
+}
+
+export function addPlayerSlot(game: GameState, playerName: string): { game: GameState, playerId: string } {
+    const playerId = generateId();
+    const newPlayer: Player = {
+        id: playerId,
+        name: playerName,
+        hand: [],
+        money: 100,
+        revealedCards: [],
+        hasPassed: false,
+    };
+    return {
+        game: {
+            ...game,
+            players: [...game.players, newPlayer],
+        },
+        playerId
+    };
+}
+
+export function removePlayer(game: GameState, hostId: string, targetPlayerId: string): GameState {
+    if (game.hostId !== hostId) throw new Error('Only host can remove players');
+    if (hostId === targetPlayerId) throw new Error('Host cannot remove themselves');
+
+    const updatedPlayers = game.players.filter(p => p.id !== targetPlayerId);
+
+    let nextPlayerIndex = game.currentPlayerIndex;
+    if (game.status === 'playing') {
+        const removedPlayerIndex = game.players.findIndex(p => p.id === targetPlayerId);
+        if (removedPlayerIndex <= game.currentPlayerIndex && game.currentPlayerIndex > 0) {
+            nextPlayerIndex = (game.currentPlayerIndex - 1) % updatedPlayers.length;
+        } else if (nextPlayerIndex >= updatedPlayers.length) {
+            nextPlayerIndex = 0;
+        }
+    }
+
+    return {
+        ...game,
+        players: updatedPlayers,
+        currentPlayerIndex: nextPlayerIndex,
+        consecutivePasses: 0, // Reset to be safe
     };
 }
 
