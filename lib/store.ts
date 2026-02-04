@@ -1,17 +1,30 @@
 
+import { supabase } from './supabase';
 import { GameState } from './gameModel';
 
-// In a real app, use Redis or a database.
-// For this dev session, we use a global variable to persist across HMR (mostly).
+// Replaces the Map<string, GameState> with Supabase calls
 
-declare global {
-    var gameStore: Map<string, GameState> | undefined;
+export async function getGame(roomId: string): Promise<GameState | null> {
+    const { data, error } = await supabase
+        .from('games')
+        .select('state')
+        .eq('id', roomId)
+        .single();
+
+    if (error || !data) return null;
+    return data.state as GameState;
 }
 
-const store = global.gameStore || new Map<string, GameState>();
+export async function saveGame(game: GameState): Promise<void> {
+    const { error } = await supabase
+        .from('games')
+        .upsert(
+            { id: game.roomId, state: game, updated_at: new Date().toISOString() },
+            { onConflict: 'id' }
+        );
 
-if (process.env.NODE_ENV !== 'production') {
-    global.gameStore = store;
+    if (error) {
+        console.error('Error saving game:', error);
+        throw new Error('Failed to save game state');
+    }
 }
-
-export const games = store;

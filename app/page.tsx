@@ -1,39 +1,51 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Lobby } from '@/components/game/Lobby';
 import { GameBoard } from '@/components/game/GameBoard';
 import { GameState } from '@/lib/gameModel';
+import { supabase } from '@/lib/supabase';
 
 export default function Home() {
   const [game, setGame] = useState<GameState | null>(null);
   const [playerId, setPlayerId] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const pollInterval = useRef<NodeJS.Timeout>(null);
 
-  const refreshGame = async (rid: string) => {
-    try {
-      const res = await fetch(`/api/game?roomId=${rid}`);
-      const data = await res.json();
-      if (data.game) {
-        setGame(data.game);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
+  // Sync with Supabase Realtime
   useEffect(() => {
-    if (game?.roomId) {
-      // Start polling
-      pollInterval.current = setInterval(() => {
-        refreshGame(game.roomId);
-      }, 1000); // 1s polling
-    }
+    if (!game?.roomId) return;
+
+    // Initial fetch to ensure we have latest state
+    const fetchLatest = async () => {
+      const res = await fetch(`/api/game?roomId=${game.roomId}`);
+      const data = await res.json();
+      if (data.game) setGame(data.game);
+    };
+    fetchLatest();
+
+    const channel = supabase
+      .channel(`game-${game.roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE
+          schema: 'public',
+          table: 'games',
+          filter: `id=eq.${game.roomId}`,
+        },
+        (payload) => {
+          // Payload.new contains the new row data
+          const newState = (payload.new as any).state as GameState;
+          if (newState) {
+            setGame(newState);
+          }
+        }
+      )
+      .subscribe();
 
     return () => {
-      if (pollInterval.current) clearInterval(pollInterval.current);
+      supabase.removeChannel(channel);
     };
   }, [game?.roomId]);
 
@@ -79,7 +91,6 @@ export default function Home() {
       method: 'POST',
       body: JSON.stringify({ action: 'start', roomId: game.roomId, playerId }),
     });
-    refreshGame(game.roomId);
   };
 
   const handleAction = async (action: 'play', subAction?: string, cardIds?: string[]) => {
@@ -94,7 +105,6 @@ export default function Home() {
         cardIds
       }),
     });
-    refreshGame(game.roomId);
   };
 
   if (loading) {
@@ -106,7 +116,7 @@ export default function Home() {
       <GameBoard
         game={game}
         playerId={playerId}
-        onRefresh={() => refreshGame(game.roomId)}
+        onRefresh={() => { }} // No-op, handled by realtime
         onAction={handleAction}
         onStart={handleStart}
       />
