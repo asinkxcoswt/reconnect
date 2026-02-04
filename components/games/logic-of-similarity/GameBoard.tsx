@@ -25,6 +25,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
     const [editMoneyModal, setEditMoneyModal] = useState<{ isOpen: boolean; targetId: string; name: string; amount: string }>({ isOpen: false, targetId: '', name: '', amount: '' });
     const [renameModal, setRenameModal] = useState<{ isOpen: boolean; name: string }>({ isOpen: false, name: '' });
     const [roomInviteModal, setRoomInviteModal] = useState<{ isOpen: boolean; url: string }>({ isOpen: false, url: '' });
+    const [abortConfirm, setAbortConfirm] = useState(false);
 
     const me = game.players.find(p => p.id === playerId);
     const isMyTurn = game.status === 'playing' && game.players[game.currentPlayerIndex].id === playerId;
@@ -142,6 +143,16 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                         <span>คัดลอก</span>
                     </button>
                 </div>
+
+                {isHost && game.status === 'playing' && (
+                    <button
+                        onClick={() => setAbortConfirm(true)}
+                        className="bg-red-900/20 hover:bg-red-900/40 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-wider"
+                    >
+                        หยุดเกม / กลับล็อบบี้
+                    </button>
+                )}
+
                 <div className="text-right">
                     <p className="font-mono font-bold text-green-400 text-xl">${me.money}</p>
                     <p className="text-sm text-gray-400 font-medium">{me.name} (คุณ)</p>
@@ -455,6 +466,32 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     <div className="bg-black/40 p-4 rounded-2xl break-all font-mono text-xs text-purple-400 border border-purple-500/20 shadow-inner select-all">
                         {roomInviteModal.url}
                     </div>
+                </div>
+            </Modal>
+
+            <Modal
+                isOpen={abortConfirm}
+                onClose={() => setAbortConfirm(false)}
+                title="หยุดเกมและกลับไปที่ล็อบบี้?"
+                actions={
+                    <>
+                        <button
+                            onClick={() => { setAbortConfirm(false); onResetToLobby(); }}
+                            className="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98]"
+                        >
+                            หยุดเกมและกลับล็อบบี้
+                        </button>
+                        <button
+                            onClick={() => setAbortConfirm(false)}
+                            className="w-full py-3 text-gray-400 hover:text-white font-bold transition-colors"
+                        >
+                            เล่นต่อ
+                        </button>
+                    </>
+                }
+            >
+                <div className="text-center">
+                    <p className="text-gray-300">คุณต้องการหยุดเกมและพาผู้เล่นทุกคนกลับไปที่หน้าล็อบบี้ใช่หรือไม่? ความคืบหน้าในรอบนี้จะหายไป</p>
                 </div>
             </Modal>
         </div>
