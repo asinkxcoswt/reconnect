@@ -30,6 +30,22 @@ export default function Home() {
           </div>
         </Link>
 
+        {/* Card for Social Identity Map */}
+        <Link
+          href="/games/social-identity-map"
+          className="group relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500 transition-all duration-300 transform hover:-translate-y-1"
+        >
+          <div className="h-48 bg-gradient-to-br from-blue-900 to-indigo-900 group-hover:from-blue-800 group-hover:to-indigo-800 transition-colors flex items-center justify-center">
+            <span className="text-4xl text-white">⭕</span>
+          </div>
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition-colors">Social Identity Map</h2>
+            <p className="text-gray-400">
+              Visualize the layers of who you are. Share your given traits, chosen values, and core beliefs.
+            </p>
+          </div>
+        </Link>
+
         {/* Placeholder for future games */}
         <div className="border border-gray-800 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-gray-600 min-h-[300px]">
           <span className="text-4xl mb-4">🚧</span>
