@@ -186,6 +186,15 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                 >
                                     ${p.money} {isHost && '✎'}
                                 </div>
+                                {isHost && p.id !== playerId && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); handleKick(p.id, p.name); }}
+                                        className="ml-1 bg-red-600/20 hover:bg-red-600/40 text-red-500 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors border border-red-500/30"
+                                        title="เชิญออก"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
