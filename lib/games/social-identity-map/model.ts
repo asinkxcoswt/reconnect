@@ -83,3 +83,21 @@ export function setPresenter(game: GameState, presenterId: string | null, subjec
         presentingSubjectId: presenterId ? subjectId : null,
     };
 }
+
+export function updateName(game: GameState, playerId: string, newName: string): GameState {
+    return {
+        ...game,
+        players: game.players.map(p =>
+            p.id === playerId ? { ...p, name: newName } : p
+        ),
+    };
+}
+
+export function resetToLobby(game: GameState): GameState {
+    return {
+        ...game,
+        status: 'lobby',
+        presenterId: null,
+        presentingSubjectId: null,
+    };
+}

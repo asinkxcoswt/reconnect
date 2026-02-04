@@ -13,7 +13,7 @@ import { getGame, saveGame } from '@/lib/store';
 
 export async function POST(req: NextRequest) {
     const body = await req.json();
-    const { action, roomId, playerId, playerName, map, presenterId, subjectId } = body;
+    const { action, roomId, playerId, playerName, newName, map, presenterId, subjectId } = body;
 
     try {
         if (action === 'create') {
@@ -51,6 +51,21 @@ export async function POST(req: NextRequest) {
         if (action === 'set_presenter') {
             // presenterId can be null to stop sharing
             const updatedGame = setPresenter(game, presenterId, subjectId);
+            await saveGame(updatedGame);
+            return NextResponse.json({ success: true, game: updatedGame });
+        }
+
+        if (action === 'update_name') {
+            if (!playerId || !newName) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+            const { updateName } = await import('@/lib/games/social-identity-map/model');
+            const updatedGame = updateName(game, playerId, newName);
+            await saveGame(updatedGame);
+            return NextResponse.json({ success: true, game: updatedGame });
+        }
+
+        if (action === 'reset-to-lobby') {
+            const { resetToLobby } = await import('@/lib/games/social-identity-map/model');
+            const updatedGame = resetToLobby(game);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }

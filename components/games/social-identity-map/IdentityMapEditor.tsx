@@ -6,10 +6,11 @@ import { IdentityMap } from '@/lib/games/social-identity-map/model';
 interface LinkProps {
     map: IdentityMap;
     readOnly?: boolean;
+    loading?: boolean;
     onChange?: (newMap: IdentityMap) => void;
 }
 
-export function IdentityMapEditor({ map, readOnly = false, onChange }: LinkProps) {
+export function IdentityMapEditor({ map, readOnly = false, loading = false, onChange }: LinkProps) {
     return (
         <div className="flex flex-col md:flex-row gap-8 w-full h-full items-start justify-center p-4">
             {/* Visualizer Area */}
@@ -27,6 +28,7 @@ export function IdentityMapEditor({ map, readOnly = false, onChange }: LinkProps
                             description="ลักษณะที่คุณติดตัวมาแต่กำเนิด"
                             values={map.given}
                             color="blue"
+                            loading={loading}
                             onChange={(vals) => onChange?.({ ...map, given: vals })}
                         />
                         <LayerInput
@@ -34,6 +36,7 @@ export function IdentityMapEditor({ map, readOnly = false, onChange }: LinkProps
                             description="ลักษณะที่คุณเลือกหรือเรียนรู้ด้วยตนเอง"
                             values={map.chosen}
                             color="purple"
+                            loading={loading}
                             onChange={(vals) => onChange?.({ ...map, chosen: vals })}
                         />
                         <LayerInput
@@ -41,6 +44,7 @@ export function IdentityMapEditor({ map, readOnly = false, onChange }: LinkProps
                             description="คุณค่าและความเชื่อที่ลึกซึ้งที่สุด"
                             values={map.core}
                             color="amber"
+                            loading={loading}
                             onChange={(vals) => onChange?.({ ...map, core: vals })}
                         />
                     </div>
@@ -129,17 +133,18 @@ function RingItems({ items, radiusPercent, color }: { items: string[], radiusPer
 
 // --- Form Component ---
 
-function LayerInput({ label, description, values, color, onChange }: {
+function LayerInput({ label, description, values, color, loading, onChange }: {
     label: string,
     description: string,
     values: string[],
     color: string,
+    loading?: boolean,
     onChange: (vals: string[]) => void
 }) {
     const [newItem, setNewItem] = useState('');
 
     const handleAdd = () => {
-        if (!newItem.trim()) return;
+        if (!newItem.trim() || loading) return;
         onChange([...values, newItem.trim()]);
         setNewItem('');
     };
@@ -149,6 +154,7 @@ function LayerInput({ label, description, values, color, onChange }: {
     };
 
     const handleRemove = (index: number) => {
+        if (loading) return;
         const newVals = [...values];
         newVals.splice(index, 1);
         onChange(newVals);
@@ -174,7 +180,8 @@ function LayerInput({ label, description, values, color, onChange }: {
                         {v}
                         <button
                             onClick={() => handleRemove(i)}
-                            className="ml-2 text-neutral-500 hover:text-red-400"
+                            disabled={loading}
+                            className={`ml-2 text-neutral-500 hover:text-red-400 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
                         >
                             ×
                         </button>
@@ -190,13 +197,16 @@ function LayerInput({ label, description, values, color, onChange }: {
                     value={newItem}
                     onChange={(e) => setNewItem(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    disabled={loading}
                     placeholder="เพิ่มลักษณะ..."
-                    className="flex-1 bg-neutral-800 border border-neutral-700 rounded px-3 py-1.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition"
+                    className="flex-1 bg-neutral-800 border border-neutral-700 rounded px-3 py-1.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition disabled:opacity-50"
                 />
                 <button
                     onClick={handleAdd}
-                    className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 px-3 py-1.5 rounded text-sm transition"
+                    disabled={!newItem.trim() || loading}
+                    className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 px-3 py-1.5 rounded text-sm transition disabled:opacity-50 flex items-center gap-2"
                 >
+                    {loading && <div className="w-4 h-4 border-2 border-neutral-500 border-t-neutral-300 rounded-full animate-spin" />}
                     เพิ่ม
                 </button>
             </div>
