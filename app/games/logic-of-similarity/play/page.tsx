@@ -221,6 +221,7 @@ function GameContent() {
       <Lobby
         onCreate={handleCreate}
         onJoin={handleJoin}
+        loading={loading}
       />
       <AlertModal
         isOpen={kickedModal}

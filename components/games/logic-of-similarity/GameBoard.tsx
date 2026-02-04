@@ -26,6 +26,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
     const [renameModal, setRenameModal] = useState<{ isOpen: boolean; name: string }>({ isOpen: false, name: '' });
     const [roomInviteModal, setRoomInviteModal] = useState<{ isOpen: boolean; url: string }>({ isOpen: false, url: '' });
     const [abortConfirm, setAbortConfirm] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     const me = game.players.find(p => p.id === playerId);
     const isMyTurn = game.status === 'playing' && game.players[game.currentPlayerIndex].id === playerId;
@@ -54,14 +55,25 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
     };
 
     const handleReveal = async () => {
-        if (selectedCardIds.length === 0) return;
-        await onAction('play', 'reveal', selectedCardIds);
-        setSelectedCardIds([]);
+        if (selectedCardIds.length === 0 || isPending) return;
+        setIsPending(true);
+        try {
+            await onAction('play', 'reveal', selectedCardIds);
+            setSelectedCardIds([]);
+        } finally {
+            setIsPending(false);
+        }
     };
 
     const handleSkip = async () => {
-        await onAction('play', 'skip');
-        setSelectedCardIds([]);
+        if (isPending) return;
+        setIsPending(true);
+        try {
+            await onAction('play', 'skip');
+            setSelectedCardIds([]);
+        } finally {
+            setIsPending(false);
+        }
     };
 
     const handleCopyInvite = async (url: string) => {
@@ -87,11 +99,16 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
 
     const handleKickConfirm = async () => {
         const { targetId } = kickConfirm;
-        setKickConfirm({ ...kickConfirm, isOpen: false });
-        await fetch('/api/games/logic-of-similarity', {
-            method: 'POST',
-            body: JSON.stringify({ action: 'remove-player', roomId: game.roomId, playerId, targetPlayerId: targetId }),
-        });
+        setIsPending(true);
+        try {
+            await fetch('/api/games/logic-of-similarity', {
+                method: 'POST',
+                body: JSON.stringify({ action: 'remove-player', roomId: game.roomId, playerId, targetPlayerId: targetId }),
+            });
+            setKickConfirm({ ...kickConfirm, isOpen: false });
+        } finally {
+            setIsPending(false);
+        }
     };
 
     const handleEditMoney = (p: { id: string, name: string, money: number }) => {
@@ -101,15 +118,25 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
 
     const handleUpdateMoneySubmit = async () => {
         const amount = parseInt(editMoneyModal.amount);
-        if (isNaN(amount)) return;
-        await onUpdateMoney(editMoneyModal.targetId, amount);
-        setEditMoneyModal({ ...editMoneyModal, isOpen: false });
+        if (isNaN(amount) || isPending) return;
+        setIsPending(true);
+        try {
+            await onUpdateMoney(editMoneyModal.targetId, amount);
+            setEditMoneyModal({ ...editMoneyModal, isOpen: false });
+        } finally {
+            setIsPending(false);
+        }
     };
 
     const handleUpdateNameSubmit = async () => {
-        if (!renameModal.name.trim()) return;
-        await onUpdateName(renameModal.name.trim());
-        setRenameModal({ ...renameModal, isOpen: false });
+        if (!renameModal.name.trim() || isPending) return;
+        setIsPending(true);
+        try {
+            await onUpdateName(renameModal.name.trim());
+            setRenameModal({ ...renameModal, isOpen: false });
+        } finally {
+            setIsPending(false);
+        }
     };
 
     const shareRoomLink = async () => {
@@ -206,10 +233,16 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     )}
                     {isHost && game.players.length >= 2 && (
                         <button
-                            onClick={onStart}
-                            className="mt-8 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-green-900/20 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1"
+                            onClick={async () => {
+                                if (isPending) return;
+                                setIsPending(true);
+                                try { await onStart(); } finally { setIsPending(false); }
+                            }}
+                            disabled={isPending}
+                            className="mt-8 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-green-900/20 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1 flex items-center gap-2"
                         >
-                            เริ่มเกม
+                            {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                            {isPending ? 'กำลังเริ่ม...' : 'เริ่มเกม'}
                         </button>
                     )}
                     {isHost && game.players.length < 2 && (
@@ -308,15 +341,27 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                     <div className="w-full space-y-4 pt-4 border-t border-gray-700">
                                         <div className="flex flex-col gap-3">
                                             <button
-                                                onClick={onStart}
-                                                className="w-full cursor-pointer bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-900/40 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1 text-lg"
+                                                onClick={async () => {
+                                                    if (isPending) return;
+                                                    setIsPending(true);
+                                                    try { await onStart(); } finally { setIsPending(false); }
+                                                }}
+                                                disabled={isPending}
+                                                className="w-full cursor-pointer bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-900/40 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1 text-lg flex items-center justify-center gap-2"
                                             >
-                                                เล่นรอบถัดไป
+                                                {isPending && <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                                                {isPending ? 'กำลังดำเนินการ...' : 'เล่นรอบถัดไป'}
                                             </button>
                                             <button
-                                                onClick={onResetToLobby}
-                                                className="cursor-pointer bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 border border-gray-500/50 py-3 rounded-2xl font-bold transition-all"
+                                                onClick={async () => {
+                                                    if (isPending) return;
+                                                    setIsPending(true);
+                                                    try { await onResetToLobby(); } finally { setIsPending(false); }
+                                                }}
+                                                disabled={isPending}
+                                                className="cursor-pointer bg-gray-600/20 hover:bg-gray-600/30 disabled:opacity-50 text-gray-400 border border-gray-500/50 py-3 rounded-2xl font-bold transition-all flex items-center justify-center gap-2"
                                             >
+                                                {isPending && <div className="w-4 h-4 border-2 border-gray-400/30 border-t-gray-400 rounded-full animate-spin" />}
                                                 ไปที่ล็อบบี้
                                             </button>
                                         </div>
@@ -345,15 +390,18 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                 <div className="flex gap-4">
                                     <button
                                         onClick={handleSkip}
-                                        className="px-6 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg font-bold"
+                                        disabled={isPending}
+                                        className="px-6 py-2 bg-gray-600 hover:bg-gray-500 disabled:opacity-50 rounded-lg font-bold flex items-center gap-2"
                                     >
+                                        {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                         ข้าม
                                     </button>
                                     <button
                                         onClick={handleReveal}
-                                        disabled={selectedCardIds.length === 0}
-                                        className="px-6 py-2 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-black rounded-lg font-bold"
+                                        disabled={selectedCardIds.length === 0 || isPending}
+                                        className="px-6 py-2 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-black rounded-lg font-bold flex items-center gap-2"
                                     >
+                                        {isPending && <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />}
                                         เปิดเผยที่เลือก
                                     </button>
                                 </div>
@@ -414,9 +462,11 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     <>
                         <button
                             onClick={handleKickConfirm}
-                            className="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98]"
+                            disabled={isPending}
+                            className="w-full py-4 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98] flex items-center justify-center gap-2"
                         >
-                            เชิญออก
+                            {isPending && <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                            {isPending ? 'กำลังดำเนินการ...' : 'เชิญออก'}
                         </button>
                         <button
                             onClick={() => setKickConfirm({ ...kickConfirm, isOpen: false })}
@@ -483,10 +533,16 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                 actions={
                     <>
                         <button
-                            onClick={() => { setAbortConfirm(false); onResetToLobby(); }}
-                            className="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98]"
+                            onClick={async () => {
+                                if (isPending) return;
+                                setIsPending(true);
+                                try { await onResetToLobby(); setAbortConfirm(false); } finally { setIsPending(false); }
+                            }}
+                            disabled={isPending}
+                            className="w-full py-4 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-900/40 active:scale-[0.98] flex items-center justify-center gap-2"
                         >
-                            หยุดเกมและกลับล็อบบี้
+                            {isPending && <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                            {isPending ? 'กำลังดำเนินการ...' : 'หยุดเกมและกลับล็อบบี้'}
                         </button>
                         <button
                             onClick={() => setAbortConfirm(false)}

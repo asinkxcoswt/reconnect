@@ -5,9 +5,10 @@ import React, { useState } from 'react';
 interface LobbyProps {
     onJoin: (roomId: string, playerName: string) => void;
     onCreate: (playerName: string) => void;
+    loading?: boolean;
 }
 
-export function Lobby({ onJoin, onCreate }: LobbyProps) {
+export function Lobby({ onJoin, onCreate, loading }: LobbyProps) {
     const [name, setName] = useState('');
     const [roomId, setRoomId] = useState('');
 
@@ -32,16 +33,18 @@ export function Lobby({ onJoin, onCreate }: LobbyProps) {
                 <div className="grid grid-cols-2 gap-4">
                     <button
                         onClick={() => onCreate(name)}
-                        disabled={!name}
-                        className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all"
+                        disabled={!name || loading}
+                        className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
                     >
+                        {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                         สร้างห้อง
                     </button>
                     <button
                         onClick={() => roomId && onJoin(roomId, name)}
-                        disabled={!name || !roomId}
-                        className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all"
+                        disabled={!name || !roomId || loading}
+                        className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
                     >
+                        {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                         เข้าร่วมห้อง
                     </button>
                 </div>
