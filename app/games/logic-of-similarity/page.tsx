@@ -82,12 +82,6 @@ export default function GameIntro() {
                 </div>
             </div>
 
-            {/* Footer */}
-            <footer className="border-t border-gray-800 py-12 text-center text-gray-500">
-                <Link href="/" className="hover:text-white transition-colors flex items-center justify-center gap-2">
-                    <span>←</span> กลับสู่ Reconnect Gallery
-                </Link>
-            </footer>
         </div>
     );
 }

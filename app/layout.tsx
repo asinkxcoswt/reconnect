@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "A digital gallery of games and ideas designed to bring people closer together.",
 };
 
+import { NavigationFooter } from "@/components/NavigationFooter";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,6 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <NavigationFooter />
       </body>
     </html>
   );
