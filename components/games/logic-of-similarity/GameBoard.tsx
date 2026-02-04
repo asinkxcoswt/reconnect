@@ -19,13 +19,12 @@ interface GameBoardProps {
 
 export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onResetToLobby, onUpdateMoney, onUpdateName }: GameBoardProps) {
     const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
-    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-    const [newPlayerName, setNewPlayerName] = useState('');
     const [recoveryModal, setRecoveryModal] = useState<{ isOpen: boolean; url: string; name: string }>({ isOpen: false, url: '', name: '' });
     const [infoModal, setInfoModal] = useState<{ isOpen: boolean; title: string; message: string }>({ isOpen: false, title: '', message: '' });
     const [kickConfirm, setKickConfirm] = useState<{ isOpen: boolean; targetId: string; name: string }>({ isOpen: false, targetId: '', name: '' });
     const [editMoneyModal, setEditMoneyModal] = useState<{ isOpen: boolean; targetId: string; name: string; amount: string }>({ isOpen: false, targetId: '', name: '', amount: '' });
     const [renameModal, setRenameModal] = useState<{ isOpen: boolean; name: string }>({ isOpen: false, name: '' });
+    const [roomInviteModal, setRoomInviteModal] = useState<{ isOpen: boolean; url: string }>({ isOpen: false, url: '' });
 
     const me = game.players.find(p => p.id === playerId);
     const isMyTurn = game.status === 'playing' && game.players[game.currentPlayerIndex].id === playerId;
@@ -62,22 +61,6 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
     const handleSkip = async () => {
         await onAction('play', 'skip');
         setSelectedCardIds([]);
-    };
-
-    const handleCreateSlot = async () => {
-        if (!newPlayerName) return;
-
-        const res = await fetch('/api/games/logic-of-similarity', {
-            method: 'POST',
-            body: JSON.stringify({ action: 'create-slot', roomId: game.roomId, playerId, playerName: newPlayerName }),
-        });
-        const data = await res.json();
-        if (data.success) {
-            const inviteUrl = `${window.location.origin}${window.location.pathname}?roomId=${game.roomId}&playerId=${data.newPlayerId}`;
-            setNewPlayerName('');
-            setIsInviteModalOpen(false);
-            setRecoveryModal({ isOpen: true, url: inviteUrl, name: data.game.players.find((p: any) => p.id === data.newPlayerId)?.name || 'ผู้เล่นใหม่' });
-        }
     };
 
     const handleCopyInvite = async (url: string) => {
@@ -130,9 +113,13 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
 
     const shareRoomLink = async () => {
         const url = `${window.location.origin}${window.location.pathname}?roomId=${game.roomId}`;
+        setRoomInviteModal({ isOpen: true, url });
+    };
+
+    const copyRoomId = async () => {
         try {
-            await navigator.clipboard.writeText(url);
-            setInfoModal({ isOpen: true, title: 'สำเร็จ!', message: 'ก๊อปปี้ลิงก์ห้องแล้ว! ส่งให้เพื่อนเพื่อเข้าร่วมได้เลย' });
+            await navigator.clipboard.writeText(game.roomId);
+            setInfoModal({ isOpen: true, title: 'สำเร็จ!', message: 'คัดลอกรหัสห้องแล้ว' });
         } catch (err) {
             console.error('Clipboard failed:', err);
         }
@@ -148,11 +135,11 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                         <p className="text-xs text-gray-500 uppercase tracking-widest">{game.status}</p>
                     </div>
                     <button
-                        onClick={shareRoomLink}
-                        className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg transition-colors group"
-                        title="แชร์ลิงก์ห้อง"
+                        onClick={copyRoomId}
+                        className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg transition-colors group flex items-center gap-1 text-xs font-bold text-gray-400"
+                        title="คัดลอกรหัสห้อง"
                     >
-                        🔗
+                        <span>คัดลอก</span>
                     </button>
                 </div>
                 <div className="text-right">
@@ -200,10 +187,10 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     </div>
                     {isHost && (
                         <button
-                            onClick={() => setIsInviteModalOpen(true)}
+                            onClick={shareRoomLink}
                             className="bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/50 py-2 px-6 rounded-xl text-sm font-bold transition-all"
                         >
-                            + สร้างลิงก์เชิญเพื่อน
+                            + เชิญเพื่อน
                         </button>
                     )}
                     {isHost && game.players.length >= 2 && (
@@ -370,16 +357,6 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
             )}
 
             {/* Modals */}
-            <PromptModal
-                isOpen={isInviteModalOpen}
-                onClose={() => setIsInviteModalOpen(false)}
-                title="สร้างสล็อตเพื่อนใหม่"
-                placeholder="ระบุชื่อเพื่อน..."
-                value={newPlayerName}
-                onChange={setNewPlayerName}
-                onSubmit={handleCreateSlot}
-                submitLabel="สร้าง และ ก๊อปปี้ลิงก์"
-            />
 
             <Modal
                 isOpen={recoveryModal.isOpen}
@@ -458,6 +435,28 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                 onSubmit={handleUpdateNameSubmit}
                 submitLabel="บันทึก"
             />
+
+            <Modal
+                isOpen={roomInviteModal.isOpen}
+                onClose={() => setRoomInviteModal({ ...roomInviteModal, isOpen: false })}
+                title="เชิญเพื่อน"
+                actions={
+                    <button
+                        onClick={() => handleCopyInvite(roomInviteModal.url)}
+                        className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-black rounded-2xl transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2"
+                    >
+                        <span>คัดลอกลิงก์</span>
+                        <span className="text-xl">📋</span>
+                    </button>
+                }
+            >
+                <div className="space-y-4 text-center">
+                    <p className="text-gray-400">ส่งลิงก์ด้านล่างนี้ให้เพื่อนเพื่อเข้าร่วมเกม:</p>
+                    <div className="bg-black/40 p-4 rounded-2xl break-all font-mono text-xs text-purple-400 border border-purple-500/20 shadow-inner select-all">
+                        {roomInviteModal.url}
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Lobby } from '@/components/games/logic-of-similarity/Lobby';
 import { GameBoard } from '@/components/games/logic-of-similarity/GameBoard';
-import { AlertModal } from '@/components/games/logic-of-similarity/Modal';
+import { AlertModal, PromptModal } from '@/components/games/logic-of-similarity/Modal';
 import { GameState } from '@/lib/gameModel';
 import { supabase } from '@/lib/supabase';
 
@@ -18,6 +18,8 @@ function GameContent() {
   const [playerId, setPlayerId] = useState<string>(searchParams.get('playerId') || '');
   const [loading, setLoading] = useState(false);
   const [kickedModal, setKickedModal] = useState(false);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [joinName, setJoinName] = useState('');
 
   const initialRoomId = searchParams.get('roomId');
   const hasSyncedUrl = useRef(false);
@@ -32,6 +34,10 @@ function GameContent() {
           const data = await res.json();
           if (data.game) {
             setGame(data.game);
+            // If no playerId in URL, prompt to join
+            if (!playerId) {
+              setIsJoinModalOpen(true);
+            }
           }
         } finally {
           setLoading(false);
@@ -39,7 +45,7 @@ function GameContent() {
       };
       fetchInitial();
     }
-  }, [initialRoomId]);
+  }, [initialRoomId, playerId]);
 
   // Sync with Supabase Realtime
   useEffect(() => {
@@ -139,6 +145,12 @@ function GameContent() {
     }
   };
 
+  const handleJoinSubmit = () => {
+    if (!initialRoomId || !joinName.trim()) return;
+    handleJoin(initialRoomId, joinName.trim());
+    setIsJoinModalOpen(false);
+  };
+
   const handleStart = async () => {
     if (!game) return;
     await fetch('/api/games/logic-of-similarity', {
@@ -216,6 +228,16 @@ function GameContent() {
         title="ถูกเชิญออก"
         message="คุณถูกเชิญออกจากห้องโดยโฮสต์"
         type="warning"
+      />
+      <PromptModal
+        isOpen={isJoinModalOpen}
+        onClose={() => { }} // Force name entry if they want to join via link
+        title="ยินดีต้อนรับ!"
+        placeholder="ระบุชื่อของคุณเพื่อเข้าร่วม..."
+        value={joinName}
+        onChange={setJoinName}
+        onSubmit={handleJoinSubmit}
+        submitLabel="เข้าร่วมเกม"
       />
     </>
   );
