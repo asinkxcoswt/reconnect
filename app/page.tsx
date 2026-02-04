@@ -14,16 +14,16 @@ export default function Home() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {/* Card for Color Majority */}
+        {/* Card for Logic of Similarity */}
         <Link
-          href="/games/color-majority"
+          href="/games/logic-of-similarity"
           className="group relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-purple-500 transition-all duration-300 transform hover:-translate-y-1"
         >
           <div className="h-48 bg-gradient-to-br from-yellow-900 to-red-900 group-hover:from-yellow-800 group-hover:to-red-800 transition-colors flex items-center justify-center">
             <span className="text-4xl">🎨</span>
           </div>
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">Color Majority</h2>
+            <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">Logic of Similarity</h2>
             <p className="text-gray-400">
               เกมแห่งการอนุมานทางสังคมและการเปิดเผยที่มีความเสี่ยง โน้มน้าวกลุ่มคนให้มาเป็นสีของคุณเพื่อชนะเงินรางวัล
             </p>

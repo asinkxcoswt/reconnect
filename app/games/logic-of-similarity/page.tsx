@@ -7,12 +7,12 @@ export default function GameIntro() {
             {/* Hero Section */}
             <div className="relative overflow-hidden bg-gradient-to-b from-purple-900 to-gray-900 py-24 px-8 text-center">
                 <div className="relative z-10 max-w-4xl mx-auto">
-                    <h1 className="text-6xl font-bold mb-6">Color Majority</h1>
+                    <h1 className="text-6xl font-bold mb-6">Logic of Similarity</h1>
                     <p className="text-2xl text-purple-200 mb-10 leading-relaxed">
                         "The truth isn't what is dealt to you.<br />It's what you choose to reveal."
                     </p>
                     <Link
-                        href="/games/color-majority/play"
+                        href="/games/logic-of-similarity/play"
                         className="inline-block bg-white text-purple-900 font-bold text-xl px-12 py-4 rounded-full hover:bg-purple-100 transform hover:scale-105 transition-all shadow-lg"
                     >
                         Play Now
@@ -31,7 +31,7 @@ export default function GameIntro() {
                 </h2>
                 <p>
                     In life, we often hold cards close to our chest. We think power comes from having the best hand.
-                    But in <strong>Color Majority</strong>, having the cards means nothing if you don't show them.
+                    But in <strong>Logic of Similarity</strong>, having the cards means nothing if you don't show them.
                 </p>
                 <p>
                     The "winning" color isn't determined by chance—it's determined by the collective bravery of the players.

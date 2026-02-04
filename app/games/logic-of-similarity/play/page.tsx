@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Lobby } from '@/components/games/color-majority/Lobby';
-import { GameBoard } from '@/components/games/color-majority/GameBoard';
+import { Lobby } from '@/components/games/logic-of-similarity/Lobby';
+import { GameBoard } from '@/components/games/logic-of-similarity/GameBoard';
 import { GameState } from '@/lib/gameModel';
 import { supabase } from '@/lib/supabase';
 
@@ -18,7 +18,7 @@ export default function Home() {
 
     // Initial fetch to ensure we have latest state
     const fetchLatest = async () => {
-      const res = await fetch(`/api/games/color-majority?roomId=${game.roomId}`);
+      const res = await fetch(`/api/games/logic-of-similarity?roomId=${game.roomId}`);
       const data = await res.json();
       if (data.game) setGame(data.game);
     };
@@ -52,7 +52,7 @@ export default function Home() {
   const handleCreate = async (playerName: string) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/games/color-majority', {
+      const res = await fetch('/api/games/logic-of-similarity', {
         method: 'POST',
         body: JSON.stringify({ action: 'create', playerName }),
       });
@@ -69,7 +69,7 @@ export default function Home() {
   const handleJoin = async (roomId: string, playerName: string) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/games/color-majority', {
+      const res = await fetch('/api/games/logic-of-similarity', {
         method: 'POST',
         body: JSON.stringify({ action: 'join', roomId, playerName }),
       });
@@ -87,7 +87,7 @@ export default function Home() {
 
   const handleStart = async () => {
     if (!game) return;
-    await fetch('/api/games/color-majority', {
+    await fetch('/api/games/logic-of-similarity', {
       method: 'POST',
       body: JSON.stringify({ action: 'start', roomId: game.roomId, playerId }),
     });
@@ -95,7 +95,7 @@ export default function Home() {
 
   const handleAction = async (action: 'play', subAction?: string, cardIds?: string[]) => {
     if (!game) return;
-    await fetch('/api/games/color-majority', {
+    await fetch('/api/games/logic-of-similarity', {
       method: 'POST',
       body: JSON.stringify({
         action,

@@ -14,7 +14,7 @@ export function Lobby({ onJoin, onCreate }: LobbyProps) {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                Color Majority
+                Logic of Similarity
             </h1>
 
             <div className="w-full max-w-md bg-gray-800 p-8 rounded-2xl shadow-xl space-y-6">
