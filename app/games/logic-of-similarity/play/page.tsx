@@ -231,7 +231,7 @@ function GameContent() {
         type="warning"
       />
       <PromptModal
-        isOpen={isJoinModalOpen}
+        isOpen={isJoinModalOpen && !kickedModal}
         onClose={() => { }} // Force name entry if they want to join via link
         title="ยินดีต้อนรับ!"
         placeholder="ระบุชื่อของคุณเพื่อเข้าร่วม..."

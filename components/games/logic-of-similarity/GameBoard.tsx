@@ -79,7 +79,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
     const handleCopyInvite = async (url: string) => {
         try {
             await navigator.clipboard.writeText(url);
-            setInfoModal({ isOpen: true, title: 'สำเร็จ!', message: 'ก๊อปปี้ลิงก์เชิญแล้ว!' });
+            alert('คัดลอกลิงก์เชิญเรียบร้อยแล้ว')
         } catch (err) {
             console.error('Clipboard failed:', err);
         }
@@ -147,7 +147,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
     const copyRoomId = async () => {
         try {
             await navigator.clipboard.writeText(game.roomId);
-            setInfoModal({ isOpen: true, title: 'สำเร็จ!', message: 'คัดลอกรหัสห้องแล้ว' });
+            alert("คัดลอกรหัสห้องแล้ว")
         } catch (err) {
             console.error('Clipboard failed:', err);
         }
@@ -166,6 +166,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                         onClick={copyRoomId}
                         className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg transition-colors group flex items-center gap-1 text-xs font-bold text-gray-400"
                         title="คัดลอกรหัสห้อง"
+
                     >
                         <span>คัดลอก</span>
                     </button>
