@@ -1,5 +1,6 @@
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -19,8 +20,13 @@ export default function Home() {
           href="/games/logic-of-similarity"
           className="group relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-purple-500 transition-all duration-300 transform hover:-translate-y-1"
         >
-          <div className="h-48 bg-gradient-to-br from-yellow-900 to-red-900 group-hover:from-yellow-800 group-hover:to-red-800 transition-colors flex items-center justify-center">
-            <span className="text-4xl">🎨</span>
+          <div className="h-48 bg-gradient-to-br from-yellow-900 to-red-900 group-hover:from-yellow-800 group-hover:to-red-800 transition-colors flex items-center justify-center relative overflow-hidden">
+            <Image
+              src="/logic-of-similarity-thumbnail.png"
+              alt="Logic of Similarity"
+              fill
+              className="object-cover"
+            />
           </div>
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">Logic of Similarity</h2>
@@ -35,8 +41,13 @@ export default function Home() {
           href="/games/social-identity-map"
           className="group relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500 transition-all duration-300 transform hover:-translate-y-1"
         >
-          <div className="h-48 bg-gradient-to-br from-blue-900 to-indigo-900 group-hover:from-blue-800 group-hover:to-indigo-800 transition-colors flex items-center justify-center">
-            <span className="text-4xl text-white">⭕</span>
+          <div className="h-48 bg-gradient-to-br from-blue-900 to-indigo-900 group-hover:from-blue-800 group-hover:to-indigo-800 transition-colors flex items-center justify-center relative overflow-hidden">
+            <Image
+              src="/social-identity-map-thumbnail.png"
+              alt="Social Identity Map"
+              fill
+              className="object-cover"
+            />
           </div>
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition-colors">Social Identity Map</h2>
