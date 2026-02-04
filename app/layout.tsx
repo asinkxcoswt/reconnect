@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Prompt, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const prompt = Prompt({
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-prompt",
+  subsets: ["latin", "thai"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const mono = IBM_Plex_Mono({
+  weight: ["400", "500"],
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
 });
 
@@ -25,9 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th">
+    <html lang="th" className={`${prompt.variable} ${mono.variable}`}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="antialiased"
       >
         {children}
         <NavigationFooter />
