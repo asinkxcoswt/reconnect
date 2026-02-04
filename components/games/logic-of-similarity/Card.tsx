@@ -14,6 +14,7 @@ const colorMap: Record<Color, string> = {
     blue: 'bg-blue-500',
     green: 'bg-green-500',
     yellow: 'bg-yellow-400',
+    purple: 'bg-purple-600',
 };
 
 export function Card({ color, onClick, selected, hidden }: CardProps) {

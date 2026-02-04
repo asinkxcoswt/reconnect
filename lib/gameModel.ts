@@ -1,6 +1,6 @@
 
-export type Color = 'red' | 'blue' | 'green' | 'yellow';
-export const COLORS: Color[] = ['red', 'blue', 'green', 'yellow'];
+export type Color = 'red' | 'blue' | 'green' | 'yellow' | 'purple';
+export const COLORS: Color[] = ['red', 'blue', 'green', 'yellow', 'purple'];
 
 export interface Card {
     id: string;
@@ -96,9 +96,9 @@ export function startGame(game: GameState, requesterId: string): GameState {
     const deck = generateDeck();
     const players = game.players.map(p => ({ ...p, hand: [] as Card[], revealedCards: [] as Card[], hasPassed: false }));
 
-    // Deal 4 cards to each player
+    // Deal 5 cards to each player
     players.forEach(p => {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 5; i++) {
             const card = deck.pop();
             if (card) p.hand.push(card);
         }
@@ -167,7 +167,7 @@ export function playTurn(game: GameState, playerId: string, action: 'reveal' | '
 }
 
 function calculateScore(game: GameState): GameState {
-    const colorCounts: Record<Color, number> = { red: 0, blue: 0, green: 0, yellow: 0 };
+    const colorCounts: Record<Color, number> = { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 };
 
     game.players.forEach(p => {
         p.revealedCards.forEach(c => {
@@ -191,11 +191,19 @@ function calculateScore(game: GameState): GameState {
     // 1. Collect penalties
     playerUpdates.forEach(p => {
         let penalty = 0;
+
+        // Standard penalty for incorrect colors
         p.revealedCards.forEach(c => {
             if (!winColors.includes(c.color)) {
                 penalty += PENALTY_AMOUNT;
             }
         });
+
+        // Special penalty: Player who don't reveal any card will be fined by PENALTY_AMOUNT X 5
+        if (p.revealedCards.length === 0) {
+            penalty += PENALTY_AMOUNT * 5;
+        }
+
         if (penalty > 0) {
             p.money -= penalty;
             totalPot += penalty;

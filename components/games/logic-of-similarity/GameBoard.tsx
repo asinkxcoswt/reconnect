@@ -119,7 +119,8 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                                         <div key={i} className={`w-6 h-8 rounded ${c.color === 'red' ? 'bg-red-500' :
                                             c.color === 'blue' ? 'bg-blue-500' :
                                                 c.color === 'green' ? 'bg-green-500' :
-                                                    'bg-yellow-400'
+                                                    c.color === 'purple' ? 'bg-purple-600' :
+                                                        'bg-yellow-400'
                                             }`}></div>
                                     ))}
                                 </div>
@@ -129,38 +130,52 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
 
                     {/* Field Logic / Finished Screen */}
                     {game.status === 'finished' && (
-                        <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
-                            <div className="bg-gray-800 p-8 rounded-2xl max-w-lg w-full">
-                                <h2 className="text-3xl font-bold mb-4 text-center">จบเกม!</h2>
-
-                                <div className="space-y-4 mb-8">
-                                    {game.winners && game.winners.length > 0 && (
-                                        <div>
-                                            <h3 className="text-green-400 font-bold mb-2">ผู้ชนะ</h3>
-                                            {game.winners.map((w, i) => {
-                                                const p = game.players.find(pl => pl.id === w.playerId);
-                                                return <p key={i}>{p?.name || 'Unknown'} ชนะ ${w.amountWon}</p>
-                                            })}
-                                        </div>
-                                    )}
-
-                                    {game.losers && game.losers.length > 0 && (
-                                        <div>
-                                            <h3 className="text-red-400 font-bold mb-2">ผู้แพ้</h3>
-                                            {game.losers.map((l, i) => {
-                                                const p = game.players.find(pl => pl.id === l.playerId);
-                                                return <p key={i}>{p?.name || 'Unknown'} แพ้ ${l.amountLost}</p>
-                                            })}
-                                        </div>
-                                    )}
+                        <div className="absolute inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+                            <div className="bg-gray-800 p-8 rounded-3xl max-w-lg w-full shadow-2xl border border-gray-700 animate-in fade-in zoom-in duration-300">
+                                <div className="text-center mb-6">
+                                    <div className="text-6xl mb-4 animate-bounce">💰</div>
+                                    <h2 className="text-4xl font-extrabold text-white mb-2">จบเกม!</h2>
+                                    <div className="bg-green-500/20 text-green-400 py-2 px-6 rounded-full inline-block font-bold text-xl border border-green-500/50">
+                                        เงินรางวัลกองกลาง: ${game.winners?.reduce((sum, w) => sum + w.amountWon, 0) || 0}
+                                    </div>
                                 </div>
 
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-bold"
-                                >
-                                    กลับสู่ล็อบบี้
-                                </button>
+                                <div className="space-y-3 mb-8 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                                    {game.players.map(p => {
+                                        const win = game.winners?.find(w => w.playerId === p.id);
+                                        const loss = game.losers?.find(l => l.playerId === p.id);
+                                        const net = (win?.amountWon || 0) - (loss?.amountLost || 0);
+
+                                        return (
+                                            <div key={p.id} className="flex items-center justify-between bg-gray-700/50 p-4 rounded-xl border border-gray-600">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="font-bold text-lg">{p.name}</div>
+                                                    {p.id === playerId && <span className="text-xs bg-blue-500 px-2 py-0.5 rounded text-white font-medium uppercase tracking-wider">คุณ</span>}
+                                                </div>
+                                                <div className={`font-mono font-bold text-lg ${net > 0 ? 'text-green-400' : net < 0 ? 'text-red-400' : 'text-gray-400'}`}>
+                                                    {net > 0 ? `+${net}` : net === 0 ? '0' : net}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        onClick={() => window.location.reload()}
+                                        className="bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-2xl font-bold transition-all"
+                                    >
+                                        กลับสู่ล็อบบี้
+                                    </button>
+                                    {isHost && (
+                                        <button
+                                            onClick={onStart}
+                                            className="bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-900/20 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1"
+                                        >
+                                            รอบถัดไป
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
