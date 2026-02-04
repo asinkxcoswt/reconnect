@@ -192,6 +192,14 @@ function GameContent() {
         });
     };
 
+    const handleKick = async (targetId: string) => {
+        if (!game) return;
+        await fetch('/api/games/social-identity-map', {
+            method: 'POST',
+            body: JSON.stringify({ action: 'kick', roomId: game.roomId, playerId, targetId }),
+        });
+    };
+
     if (loading && !game) {
         return <div className="min-h-screen bg-neutral-900 flex items-center justify-center text-white">Loading...</div>;
     }
@@ -205,6 +213,7 @@ function GameContent() {
                 onSetPresenter={handleSetPresenter}
                 onUpdateName={handleUpdateName}
                 onResetToLobby={handleResetToLobby}
+                onKickPlayer={handleKick}
             />
         );
     }

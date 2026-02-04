@@ -12,9 +12,10 @@ interface GameRoomProps {
     onSetPresenter: (presenterId: string | null, subjectId: string | null) => Promise<void>;
     onUpdateName: (newName: string) => Promise<void>;
     onResetToLobby: () => Promise<void>;
+    onKickPlayer: (targetId: string) => Promise<void>;
 }
 
-export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdateName, onResetToLobby }: GameRoomProps) {
+export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdateName, onResetToLobby, onKickPlayer }: GameRoomProps) {
     const [activeSubjectId, setActiveSubjectId] = useState<string>(playerId);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isPending, setIsPending] = useState(false);
@@ -95,6 +96,18 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
         }
     };
 
+    const handleKick = async (targetId: string, targetName: string) => {
+        if (isPending || !confirm(`คุณแน่ใจหรือไม่ว่าต้องการเชิญ ${targetName} ออกจากกลุ่ม?`)) return;
+        setIsPending(true);
+        try {
+            await onKickPlayer(targetId);
+        } catch (err) {
+            console.error("Failed to kick player:", err);
+        } finally {
+            setIsPending(false);
+        }
+    };
+
     const copyRoomId = async () => {
         try {
             await navigator.clipboard.writeText(game.roomId);
@@ -147,7 +160,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                         <p className="text-xs font-semibold text-gray-500 uppercase mb-2">ผู้เล่น</p>
                         <div className="space-y-1">
                             {game.players.map(p => (
-                                <div key={p.id} className="flex flex-col gap-1">
+                                <div key={p.id} className="group relative flex flex-col gap-1">
                                     <button
                                         disabled={!!game.presenterId || isPending}
                                         onClick={() => {
@@ -159,11 +172,27 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter, onUpdate
                                             : 'hover:bg-neutral-700 text-gray-300'
                                             } ${game.presenterId === p.id ? 'ring-2 ring-blue-500' : ''}`}
                                     >
-                                        <span className="truncate">{p.name} {p.id === playerId && '(คุณ)'}</span>
+                                        <span className="truncate pr-8">{p.name} {p.id === playerId && '(คุณ)'}</span>
                                         {game.presenterId === p.id && (
                                             <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
                                         )}
                                     </button>
+
+                                    {/* Kick Button (Host only, not for self) */}
+                                    {isHost && p.id !== playerId && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleKick(p.id, p.name);
+                                            }}
+                                            disabled={isPending}
+                                            className="absolute right-2 top-2 p-1 text-neutral-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition whitespace-nowrap bg-neutral-800/80 rounded"
+                                            title="เชิญออก"
+                                        >
+                                            <span className="text-[10px]">🚫</span>
+                                        </button>
+                                    )}
+
                                     {p.id === playerId && (
                                         <button
                                             onClick={() => setRenameModal({ isOpen: true, name: p.name })}

@@ -101,3 +101,16 @@ export function resetToLobby(game: GameState): GameState {
         presentingSubjectId: null,
     };
 }
+
+export function kickPlayer(game: GameState, hostId: string, targetPlayerId: string): GameState {
+    if (game.hostId !== hostId || hostId === targetPlayerId) return game;
+
+    const isTargetPresenting = game.presenterId === targetPlayerId || game.presentingSubjectId === targetPlayerId;
+
+    return {
+        ...game,
+        players: game.players.filter(p => p.id !== targetPlayerId),
+        presenterId: isTargetPresenting ? null : game.presenterId,
+        presentingSubjectId: isTargetPresenting ? null : game.presentingSubjectId,
+    };
+}

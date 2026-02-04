@@ -70,6 +70,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, game: updatedGame });
         }
 
+        if (action === 'kick') {
+            const { targetId } = body;
+            if (!playerId || !targetId) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+            const { kickPlayer } = await import('@/lib/games/social-identity-map/model');
+            const updatedGame = kickPlayer(game, playerId, targetId);
+            await saveGame(updatedGame);
+            return NextResponse.json({ success: true, game: updatedGame });
+        }
+
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
 
     } catch (err: any) {
