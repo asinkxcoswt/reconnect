@@ -13,15 +13,17 @@ interface GameBoardProps {
     onAction: (action: 'play', subAction?: string, cardIds?: string[]) => Promise<void>;
     onStart: () => Promise<void>;
     onResetToLobby: () => Promise<void>;
+    onUpdateMoney: (targetPlayerId: string, amount: number) => Promise<void>;
 }
 
-export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onResetToLobby }: GameBoardProps) {
+export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onResetToLobby, onUpdateMoney }: GameBoardProps) {
     const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [newPlayerName, setNewPlayerName] = useState('');
     const [recoveryModal, setRecoveryModal] = useState<{ isOpen: boolean; url: string; name: string }>({ isOpen: false, url: '', name: '' });
     const [infoModal, setInfoModal] = useState<{ isOpen: boolean; title: string; message: string }>({ isOpen: false, title: '', message: '' });
     const [kickConfirm, setKickConfirm] = useState<{ isOpen: boolean; targetId: string; name: string }>({ isOpen: false, targetId: '', name: '' });
+    const [editMoneyModal, setEditMoneyModal] = useState<{ isOpen: boolean; targetId: string; name: string; amount: string }>({ isOpen: false, targetId: '', name: '', amount: '' });
 
     const me = game.players.find(p => p.id === playerId);
     const isMyTurn = game.status === 'playing' && game.players[game.currentPlayerIndex].id === playerId;
@@ -106,6 +108,18 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
         });
     };
 
+    const handleEditMoney = (p: { id: string, name: string, money: number }) => {
+        if (!isHost) return;
+        setEditMoneyModal({ isOpen: true, targetId: p.id, name: p.name, amount: p.money.toString() });
+    };
+
+    const handleUpdateMoneySubmit = async () => {
+        const amount = parseInt(editMoneyModal.amount);
+        if (isNaN(amount)) return;
+        await onUpdateMoney(editMoneyModal.targetId, amount);
+        setEditMoneyModal({ ...editMoneyModal, isOpen: false });
+    };
+
     const shareRoomLink = async () => {
         const url = `${window.location.origin}${window.location.pathname}?roomId=${game.roomId}`;
         try {
@@ -153,6 +167,12 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                 <div className={`w-3 h-3 rounded-full ${p.id === playerId ? 'bg-blue-400 animate-pulse' : 'bg-green-500'}`}></div>
                                 <span className="font-bold">{p.name}</span> {p.id === game.hostId ? '👑' : ''}
                                 {p.id === playerId && <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full ml-1 uppercase">คุณ</span>}
+                                <div
+                                    onClick={(e) => { if (isHost) { e.stopPropagation(); handleEditMoney(p); } }}
+                                    className={`ml-2 px-3 py-1 rounded-full font-mono font-bold text-sm transition-all ${isHost ? 'bg-green-600/30 text-green-400 hover:bg-green-600/50 cursor-pointer shadow-sm' : 'text-green-500'}`}
+                                >
+                                    ${p.money} {isHost && '✎'}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -394,6 +414,17 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                     <p className="text-gray-300">คุณต้องการเชิญ <span className="text-white font-bold">{kickConfirm.name}</span> ออกจากห้องใช่หรือไม่?</p>
                 </div>
             </Modal>
+
+            <PromptModal
+                isOpen={editMoneyModal.isOpen}
+                onClose={() => setEditMoneyModal({ ...editMoneyModal, isOpen: false })}
+                title={`แก้ไขเงินของ ${editMoneyModal.name}`}
+                placeholder="จำนวนเงิน..."
+                value={editMoneyModal.amount}
+                onChange={(val) => setEditMoneyModal({ ...editMoneyModal, amount: val })}
+                onSubmit={handleUpdateMoneySubmit}
+                submitLabel="บันทึก"
+            />
         </div>
     );
 }

@@ -182,6 +182,22 @@ export function resetToLobby(game: GameState, requesterId: string): GameState {
     };
 }
 
+export function updatePlayerMoney(game: GameState, hostId: string, targetPlayerId: string, amount: number): GameState {
+    if (game.hostId !== hostId) throw new Error('Only host can edit money');
+
+    const updatedPlayers = game.players.map(p => {
+        if (p.id === targetPlayerId) {
+            return { ...p, money: amount };
+        }
+        return p;
+    });
+
+    return {
+        ...game,
+        players: updatedPlayers,
+    };
+}
+
 export function playTurn(game: GameState, playerId: string, action: 'reveal' | 'skip', cardIds?: string[]): GameState {
     if (game.status !== 'playing') throw new Error('Game not playing');
     const currentPlayer = game.players[game.currentPlayerIndex];
