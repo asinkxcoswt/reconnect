@@ -290,16 +290,22 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                                     <div className="font-bold text-lg">{p.name}</div>
                                                     {p.id === playerId && <span className="text-xs bg-blue-500 px-2 py-0.5 rounded text-white font-medium uppercase tracking-wider">คุณ</span>}
                                                 </div>
-                                                <div className={`font-mono font-bold text-lg ${net > 0 ? 'text-green-400' : net < 0 ? 'text-red-400' : 'text-gray-400'}`}>
-                                                    {net > 0 ? `+${net}` : net === 0 ? '0' : net}
+                                                <div className="flex items-center gap-2">
+                                                    <div className="font-mono text-gray-400 text-sm">
+                                                        {p.money}
+                                                    </div>
+                                                    <div className={`font-mono font-bold text-lg ${net > 0 ? 'text-green-400' : net < 0 ? 'text-red-400' : 'text-gray-400'}`}>
+                                                        ({net > 0 ? `+${net}` : net === 0 ? '+0' : net})
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
                                     })}
                                 </div>
 
-                                <div className="w-full space-y-4 pt-4 border-t border-gray-700">
-                                    {isHost && (
+
+                                {isHost && (
+                                    <div className="w-full space-y-4 pt-4 border-t border-gray-700">
                                         <div className="flex flex-col gap-3">
                                             <button
                                                 onClick={onStart}
@@ -314,8 +320,9 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
                                                 ไปที่ล็อบบี้
                                             </button>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     )}
