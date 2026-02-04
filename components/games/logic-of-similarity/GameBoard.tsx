@@ -146,8 +146,8 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                         {game.players.map(p => (
                             <div
                                 key={p.id}
-                                onClick={() => isHost && openRecovery(p.id)}
-                                className={`px-6 py-3 rounded-full flex items-center gap-2 border-2 transition-all ${isHost ? 'cursor-pointer hover:border-purple-500' : ''} ${p.id === playerId ? 'bg-blue-900/40 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-gray-700 border-transparent'}`}
+                                onClick={() => isHost && game.hostId !== p.id && openRecovery(p.id)}
+                                className={`px-6 py-3 rounded-full flex items-center gap-2 border-2 transition-all ${isHost && game.hostId !== p.id ? 'cursor-pointer hover:border-purple-500' : ''} ${p.id === playerId ? 'bg-blue-900/40 border-blue-500 shadow-lg shadow-blue-500/20' : 'bg-gray-700 border-transparent'}`}
                             >
                                 <div className={`w-3 h-3 rounded-full ${p.id === playerId ? 'bg-blue-400 animate-pulse' : 'bg-green-500'}`}></div>
                                 <span className="font-bold">{p.name}</span> {p.id === game.hostId ? '👑' : ''}
@@ -257,17 +257,11 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                                     })}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button
-                                        onClick={() => window.location.reload()}
-                                        className="bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-2xl font-bold transition-all"
-                                    >
-                                        กลับสู่ล็อบบี้
-                                    </button>
+                                <div className="w-full">
                                     {isHost && (
                                         <button
                                             onClick={onStart}
-                                            className="bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-900/20 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1"
+                                            className="w-full cursor-pointer bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-900/20 transition-all border-b-4 border-green-800 active:border-b-0 active:translate-y-1"
                                         >
                                             รอบถัดไป
                                         </button>
@@ -279,8 +273,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
 
                     {/* My Area */}
                     <div
-                        onClick={() => isHost && openRecovery(playerId)}
-                        className={`mt-auto bg-gray-800/50 p-4 rounded-t-3xl backdrop-blur-sm border-t border-gray-700 relative transition-all ${isHost ? 'cursor-pointer hover:bg-gray-800/80 group' : ''}`}
+                        className={`mt-auto bg-gray-800/50 p-4 rounded-t-3xl backdrop-blur-sm border-t border-gray-700 relative transition-all`}
                     >
                         <div className="flex justify-between items-center mb-4">
                             <div>
@@ -320,9 +313,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart }: Game
                             selectedCardIds={selectedCardIds}
                             onToggleCard={toggleCard}
                         />
-                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-black shadow-xl animate-bounce border-2 border-blue-400 z-20">
-                            ✨ คุณคือผู้เล่นคนนี้
-                        </div>
+
                     </div>
                 </div>
             )}
