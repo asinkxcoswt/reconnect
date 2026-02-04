@@ -248,7 +248,7 @@ export function GameBoard({ game, playerId, onRefresh, onAction, onStart, onRese
 
             {/* Game State */}
             {(game.status === 'playing' || game.status === 'finished') && (
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-full pb-16">
                     {/* Opponents Areas */}
                     <div className="flex flex-wrap gap-4 justify-center mb-8">
                         {game.players.filter(p => p.id !== playerId).map(p => (
