@@ -13,7 +13,7 @@ import { getGame, saveGame } from '@/lib/store';
 
 export async function POST(req: NextRequest) {
     const body = await req.json();
-    const { action, roomId, playerId, playerName, map, presenterId } = body;
+    const { action, roomId, playerId, playerName, map, presenterId, subjectId } = body;
 
     try {
         if (action === 'create') {
@@ -42,15 +42,15 @@ export async function POST(req: NextRequest) {
         if (!game) return NextResponse.json({ error: 'Room not found' }, { status: 404 });
 
         if (action === 'update_map') {
-            if (!playerId || !map) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
-            const updatedGame = updateMap(game, playerId, map as IdentityMap);
+            if (!playerId || !subjectId || !map) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+            const updatedGame = updateMap(game, playerId, subjectId, map as IdentityMap);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }
 
         if (action === 'set_presenter') {
             // presenterId can be null to stop sharing
-            const updatedGame = setPresenter(game, presenterId);
+            const updatedGame = setPresenter(game, presenterId, subjectId);
             await saveGame(updatedGame);
             return NextResponse.json({ success: true, game: updatedGame });
         }

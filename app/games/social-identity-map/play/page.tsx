@@ -83,7 +83,7 @@ export default function SocialIdentityMapPage() {
         }
     };
 
-    const handleUpdateMap = async (map: IdentityMap) => {
+    const handleUpdateMap = async (subjectId: string, map: IdentityMap) => {
         if (!game) return;
         // Optimistic update? Maybe later.
 
@@ -93,19 +93,21 @@ export default function SocialIdentityMapPage() {
                 action: 'update_map',
                 roomId: game.roomId,
                 playerId,
+                subjectId,
                 map
             }),
         });
     };
 
-    const handleSetPresenter = async (presenterId: string | null) => {
+    const handleSetPresenter = async (presenterId: string | null, subjectId: string | null) => {
         if (!game) return;
         await fetch('/api/games/social-identity-map', {
             method: 'POST',
             body: JSON.stringify({
                 action: 'set_presenter',
                 roomId: game.roomId,
-                presenterId // if null, we stop sharing
+                presenterId,
+                subjectId
             }),
         });
     };

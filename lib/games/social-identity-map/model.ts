@@ -7,8 +7,8 @@ export interface IdentityMap {
 export interface Player {
     id: string;
     name: string;
-    map: IdentityMap;
-    isReady: boolean; // Maybe useful if we want to track who is done
+    maps: Record<string, IdentityMap>; // Key is subject playerId
+    isReady: boolean;
 }
 
 export interface GameState {
@@ -16,12 +16,17 @@ export interface GameState {
     status: 'lobby' | 'playing';
     players: Player[];
     hostId: string;
-    presenterId: string | null; // ID of the player currently sharing their map
+    presenterId: string | null;
+    presentingSubjectId: string | null; // ID of the player whose map is being shared
 }
 
 // Helper to generate a unique ID
 export function generateId(): string {
     return Math.random().toString(36).substring(2, 9);
+}
+
+function createEmptyMap(): IdentityMap {
+    return { given: [], chosen: [], core: [] };
 }
 
 // --- Game Logic ---
@@ -30,7 +35,7 @@ export function createRoom(hostId: string, hostName: string): GameState {
     const host: Player = {
         id: hostId,
         name: hostName,
-        map: { given: [], chosen: [], core: [] },
+        maps: { [hostId]: createEmptyMap() },
         isReady: false,
     };
     return {
@@ -39,6 +44,7 @@ export function createRoom(hostId: string, hostName: string): GameState {
         players: [host],
         hostId: hostId,
         presenterId: null,
+        presentingSubjectId: null,
     };
 }
 
@@ -48,7 +54,7 @@ export function joinRoom(game: GameState, playerId: string, playerName: string):
     const newPlayer: Player = {
         id: playerId,
         name: playerName,
-        map: { given: [], chosen: [], core: [] },
+        maps: { [playerId]: createEmptyMap() },
         isReady: false,
     };
 
@@ -58,18 +64,22 @@ export function joinRoom(game: GameState, playerId: string, playerName: string):
     };
 }
 
-export function updateMap(game: GameState, playerId: string, map: IdentityMap): GameState {
+export function updateMap(game: GameState, playerId: string, subjectId: string, map: IdentityMap): GameState {
     return {
         ...game,
         players: game.players.map(p =>
-            p.id === playerId ? { ...p, map } : p
+            p.id === playerId ? {
+                ...p,
+                maps: { ...p.maps, [subjectId]: map }
+            } : p
         ),
     };
 }
 
-export function setPresenter(game: GameState, presenterId: string | null): GameState {
+export function setPresenter(game: GameState, presenterId: string | null, subjectId: string | null): GameState {
     return {
         ...game,
         presenterId,
+        presentingSubjectId: presenterId ? subjectId : null,
     };
 }
