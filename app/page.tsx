@@ -9,7 +9,7 @@ export default function Home() {
           Reconnect
         </h1>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          A digital gallery of games and ideas designed to bring people closer together.
+          พื้นที่จัดแสดงเกมและไอเดียดิจิทัลที่ออกแบบมาเพื่อให้ผู้คนใกล้ชิดกันมากขึ้น
         </p>
       </header>
 
@@ -25,7 +25,7 @@ export default function Home() {
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">Color Majority</h2>
             <p className="text-gray-400">
-              A game of social deduction and risky reveals. sway the crowd to your color to win the pot.
+              เกมแห่งการอนุมานทางสังคมและการเปิดเผยที่มีความเสี่ยง โน้มน้าวกลุ่มคนให้มาเป็นสีของคุณเพื่อชนะเงินรางวัล
             </p>
           </div>
         </Link>
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition-colors">Social Identity Map</h2>
             <p className="text-gray-400">
-              Visualize the layers of who you are. Share your given traits, chosen values, and core beliefs.
+              มองเห็นเลเยอร์ของตัวตนที่คุณเป็น แบ่งปันลักษณะที่คุณได้รับมา คุณค่าที่คุณเลือก และความเชื่อที่เป็นแกนกลางของคุณ
             </p>
           </div>
         </Link>
@@ -49,7 +49,7 @@ export default function Home() {
         {/* Placeholder for future games */}
         <div className="border border-gray-800 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-gray-600 min-h-[300px]">
           <span className="text-4xl mb-4">🚧</span>
-          <p>More Coming Soon</p>
+          <p>เร็วๆ นี้</p>
         </div>
       </div>
     </div>

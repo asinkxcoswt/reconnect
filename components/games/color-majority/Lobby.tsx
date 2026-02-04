@@ -19,13 +19,13 @@ export function Lobby({ onJoin, onCreate }: LobbyProps) {
 
             <div className="w-full max-w-md bg-gray-800 p-8 rounded-2xl shadow-xl space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Nickname</label>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">ชื่อเล่น</label>
                     <input
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="Enter your name"
+                        placeholder="ใส่ชื่อของคุณ"
                     />
                 </div>
 
@@ -35,25 +35,25 @@ export function Lobby({ onJoin, onCreate }: LobbyProps) {
                         disabled={!name}
                         className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all"
                     >
-                        Create Room
+                        สร้างห้อง
                     </button>
                     <button
                         onClick={() => roomId && onJoin(roomId, name)}
                         disabled={!name || !roomId}
                         className="bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all"
                     >
-                        Join Room
+                        เข้าร่วมห้อง
                     </button>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Room ID (to join)</label>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">รหัสห้อง (เพื่อเข้าร่วม)</label>
                     <input
                         type="text"
                         value={roomId}
                         onChange={(e) => setRoomId(e.target.value)}
                         className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="e.g. x7z9q2"
+                        placeholder="เช่น x7z9q2"
                     />
                 </div>
             </div>

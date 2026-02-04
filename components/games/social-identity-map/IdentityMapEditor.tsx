@@ -20,25 +20,25 @@ export function IdentityMapEditor({ map, readOnly = false, onChange }: LinkProps
             {/* Editing Panel - Only show if not readOnly */}
             {!readOnly && (
                 <div className="w-full md:w-1/3 bg-neutral-800 p-6 rounded-xl border border-neutral-700 h-[600px] overflow-hidden flex flex-col">
-                    <h3 className="text-lg font-semibold text-white mb-4">Edit Map</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">แก้ไขแผนที่</h3>
                     <div className="flex-1 overflow-y-auto space-y-6 pr-2">
                         <LayerInput
-                            label="Given"
-                            description="Traits you were born with"
+                            label="สิ่งที่เลี่ยงไม่ได้ (Given)"
+                            description="ลักษณะที่คุณติดตัวมาแต่กำเนิด"
                             values={map.given}
                             color="blue"
                             onChange={(vals) => onChange?.({ ...map, given: vals })}
                         />
                         <LayerInput
-                            label="Chosen"
-                            description="Traits you chose or learned"
+                            label="สิ่งที่เลือกเอง (Chosen)"
+                            description="ลักษณะที่คุณเลือกหรือเรียนรู้ด้วยตนเอง"
                             values={map.chosen}
                             color="purple"
                             onChange={(vals) => onChange?.({ ...map, chosen: vals })}
                         />
                         <LayerInput
-                            label="Core"
-                            description="Deepest values and beliefs"
+                            label="แกนกลาง (Core)"
+                            description="คุณค่าและความเชื่อที่ลึกซึ้งที่สุด"
                             values={map.core}
                             color="amber"
                             onChange={(vals) => onChange?.({ ...map, core: vals })}
@@ -59,20 +59,20 @@ function MapVisualizer({ map }: { map: IdentityMap }) {
 
             {/* 1. GIVEN (Outer) */}
             <div className="absolute inset-0 rounded-full border-2 border-slate-700 bg-slate-800/20">
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 text-slate-500 font-bold tracking-[0.2em] text-[10px] md:text-sm uppercase">Given</div>
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 text-slate-500 font-bold tracking-[0.2em] text-[10px] md:text-sm uppercase">สิ่งที่เลี่ยงไม่ได้</div>
                 {/* Responsive radius: 300px container -> radius 150. But we need padding. */}
                 <RingItems items={map.given} radiusPercent={42} color="slate" />
             </div>
 
             {/* 2. CHOSEN (Middle) */}
             <div className="absolute w-[66%] h-[66%] rounded-full border-2 border-indigo-700 bg-indigo-900/20 z-10">
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 text-indigo-400 font-bold tracking-[0.2em] text-[10px] md:text-sm uppercase">Chosen</div>
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 text-indigo-400 font-bold tracking-[0.2em] text-[10px] md:text-sm uppercase">สิ่งที่เลือกเอง</div>
                 <RingItems items={map.chosen} radiusPercent={38} color="indigo" />
             </div>
 
             {/* 3. CORE (Inner) */}
             <div className="absolute w-[33%] h-[33%] rounded-full border-2 border-amber-700 bg-amber-900/40 z-20 flex flex-col items-center justify-center text-center p-2 md:p-4">
-                <div className="text-amber-500 font-bold tracking-[0.2em] text-[8px] md:text-xs uppercase mb-1 md:mb-2">Core</div>
+                <div className="text-amber-500 font-bold tracking-[0.2em] text-[8px] md:text-xs uppercase mb-1 md:mb-2">แกนกลาง</div>
                 <div className="flex flex-wrap justify-center gap-1 md:gap-2 max-h-full overflow-hidden">
                     {map.core.map((item, i) => (
                         <span key={i} className="inline-block px-1 md:px-2 py-0.5 bg-amber-900/80 text-amber-100 text-[10px] md:text-xs rounded border border-amber-700/50 truncate max-w-full">
@@ -180,7 +180,7 @@ function LayerInput({ label, description, values, color, onChange }: {
                         </button>
                     </span>
                 ))}
-                {values.length === 0 && <span className="text-xs text-neutral-600 italic">No traits added</span>}
+                {values.length === 0 && <span className="text-xs text-neutral-600 italic">ยังไม่มีการเพิ่มลักษณะ</span>}
             </div>
 
             {/* Input */}
@@ -190,14 +190,14 @@ function LayerInput({ label, description, values, color, onChange }: {
                     value={newItem}
                     onChange={(e) => setNewItem(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Add trait..."
+                    placeholder="เพิ่มลักษณะ..."
                     className="flex-1 bg-neutral-800 border border-neutral-700 rounded px-3 py-1.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition"
                 />
                 <button
                     onClick={handleAdd}
                     className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 px-3 py-1.5 rounded text-sm transition"
                 >
-                    Add
+                    เพิ่ม
                 </button>
             </div>
         </div>

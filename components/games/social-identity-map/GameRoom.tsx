@@ -30,14 +30,14 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
         const p = game.players.find(p => p.id === game.presenterId);
         if (p && game.presentingSubjectId) {
             viewMap = p.maps[game.presentingSubjectId] || { given: [], chosen: [], core: [] };
-            viewTitle = `${p.name} is sharing ${presentingSubject?.name}'s Map`;
+            viewTitle = `${p.name} กำลังแบ่งปันแผนที่ของ ${presentingSubject?.name}`;
             isReadOnly = !isPresenting;
         }
     } else {
         // Nobody is sharing, show local editor
         const subject = game.players.find(p => p.id === activeSubjectId);
         viewMap = me?.maps[activeSubjectId] || { given: [], chosen: [], core: [] };
-        viewTitle = activeSubjectId === playerId ? "Your Identity Map" : `Drafting Map for ${subject?.name}`;
+        viewTitle = activeSubjectId === playerId ? "แผนที่ตัวตนของคุณ" : `กำลังร่างแผนที่ให้ ${subject?.name}`;
         isReadOnly = false;
     }
 
@@ -45,11 +45,11 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
         <div className="min-h-screen bg-neutral-900 flex text-white overflow-hidden">
             {/* Sidebar */}
             <div className="w-64 bg-neutral-800 border-r border-neutral-700 p-4 flex flex-col">
-                <h2 className="text-xl font-bold mb-6">Room: {game.roomId}</h2>
+                <h2 className="text-xl font-bold mb-6">ห้อง: {game.roomId}</h2>
 
                 <div className="flex-1 overflow-y-auto space-y-4">
                     <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Players</p>
+                        <p className="text-xs font-semibold text-gray-500 uppercase mb-2">ผู้เล่น</p>
                         <div className="space-y-1">
                             {game.players.map(p => (
                                 <button
@@ -57,11 +57,11 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
                                     disabled={!!game.presenterId}
                                     onClick={() => setActiveSubjectId(p.id)}
                                     className={`w-full p-2 rounded text-left flex items-center justify-between transition ${activeSubjectId === p.id && !game.presenterId
-                                            ? 'bg-blue-600 text-white'
-                                            : 'hover:bg-neutral-700 text-gray-300'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'hover:bg-neutral-700 text-gray-300'
                                         } ${game.presenterId === p.id ? 'ring-2 ring-blue-500' : ''}`}
                                 >
-                                    <span className="truncate">{p.name} {p.id === playerId && '(You)'}</span>
+                                    <span className="truncate">{p.name} {p.id === playerId && '(คุณ)'}</span>
                                     {game.presenterId === p.id && (
                                         <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
                                     )}
@@ -78,18 +78,18 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
                             onClick={() => onSetPresenter(playerId, activeSubjectId)}
                             className="w-full py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition"
                         >
-                            Share This Map
+                            แบ่งปันแผนที่นี้
                         </button>
                     ) : isPresenting ? (
                         <button
                             onClick={() => onSetPresenter(null, null)}
                             className="w-full py-2 bg-red-600 hover:bg-red-700 rounded font-semibold transition animate-pulse"
                         >
-                            Stop Sharing
+                            หยุดแบ่งปัน
                         </button>
                     ) : (
                         <div className="text-center p-3 bg-blue-900/30 border border-blue-500/50 rounded text-sm text-blue-300">
-                            Viewing {presenter?.name}'s presentation
+                            กำลังดูการนำเสนอของ {presenter?.name}
                         </div>
                     )}
                 </div>
@@ -101,7 +101,7 @@ export function GameRoom({ game, playerId, onUpdateMap, onSetPresenter }: GameRo
                 <div className="h-16 border-b border-neutral-700 flex items-center justify-between px-6 bg-neutral-800/50">
                     <h1 className="text-xl font-semibold">{viewTitle}</h1>
                     <div className={`px-3 py-1 rounded-full text-xs font-bold ${isReadOnly ? 'bg-amber-900/50 text-amber-500' : 'bg-green-900/50 text-green-500'}`}>
-                        {isReadOnly ? 'READ ONLY' : 'EDITING'}
+                        {isReadOnly ? 'อ่านอย่างเดียว' : 'กำลังแก้ไข'}
                     </div>
                 </div>
 
